@@ -32,5 +32,10 @@ This project aims to develop an online tutoring platform using Django, Django Re
 
 ### API Development
 
-- **RESTful API:** Development of HTTP endpoints to support various functionalities, allowing integration with external services or client applications.
+- **RESTful API:** Development of HTTP endpoints to support various functionalities, allowing integration with frontend.
 - **Websockets:** Implementation of Websockets for real-time chat functionality.
+
+## Frontend Integration
+
+This project's frontend is built using React and is available at [https://github.com/Mimyen/bdio-front](https://github.com/Mimyen/bdio-front). The backend will provide RESTful APIs and Websockets endpoints, enabling seamless communication and integration with the React frontend.
+
