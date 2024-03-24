@@ -1,4 +1,4 @@
-from .models import User
+from .models import User, TokenEmailConfirmation
 
 from rest_framework.serializers import ModelSerializer, ValidationError
 
@@ -31,3 +31,12 @@ class UserSerializer(ModelSerializer):
         Create a new user with encrypted password and return it
         """
         return User.objects.create_user(**validated_data)
+    
+
+class TokenEmailConfirmationSerializer(ModelSerializer):
+    """
+    Serializer for the token email confirmation object
+    """
+    class Meta:
+        model = TokenEmailConfirmation
+        fields = ('token',)

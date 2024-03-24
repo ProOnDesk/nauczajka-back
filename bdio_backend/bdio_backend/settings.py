@@ -211,3 +211,6 @@ DEAFULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Password reset settings from 3-rd app django_rest_passwordreset
 DJANGO_REST_MULTITOKENAUTH_RESET_TOKEN_EXPIRY_TIME = 0.5 # 30 minutes
+
+# confirm email token expiry time
+# CUSTOM_CONFIRM_EMAIL_TOKEN_EXPIRY_TIME = 60 * 60 * 24 # 24 hours

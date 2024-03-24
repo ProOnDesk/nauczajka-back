@@ -73,6 +73,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_tutor = models.BooleanField(default=False)
+    is_confirmed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     objects = UserManager()
 
@@ -114,8 +115,18 @@ class User(AbstractBaseUser, PermissionsMixin):
         )
         msg.attach_alternative(email_html_message, "text/html")
         msg.send()
-
-
-
+        
     def __str__(self):
         return self.email
+
+
+class TokenEmailConfirmation(models.Model):
+    """
+    Token email account confirmation model
+    """
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    token = models.CharField(max_length=255, unique=True)
+    # created_at_int = models.IntegerField()
+    
+    def __str__(self):
+        return self.token
