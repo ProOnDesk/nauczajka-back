@@ -120,6 +120,17 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.email
 
 
+class Tutor(models.Model):
+    """
+    Tutor model
+    """
+    user = models.OneToOneField(User, primary_key=True, on_delete=models.CASCADE)
+    description = models.TextField()
+    
+    def __str__(self):
+        return f"Tutor - {self.user.email}"
+    
+
 class TokenEmailConfirmation(models.Model):
     """
     Token email account confirmation model

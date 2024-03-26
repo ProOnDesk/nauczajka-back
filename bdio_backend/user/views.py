@@ -1,15 +1,13 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-
 from rest_framework.authentication import TokenAuthentication
-
 from rest_framework.permissions import IsAuthenticated
+from user.permissions import IsTutor
 
-from .serializers import UserSerializer, TokenEmailConfirmationSerializer
+from .serializers import UserSerializer, TokenEmailConfirmationSerializer, TutorDescriptionSerializer
 
 from .models import TokenEmailConfirmation, User
-
 
 class CreateUserView(APIView):
     """
@@ -36,7 +34,6 @@ class ProfileUserView(APIView):
     """
     View and update user profile
     """
-    # authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
     serializer_class = UserSerializer
     
@@ -86,8 +83,32 @@ class ConfirmUserView(APIView):
             return Response({"Error": "User is already confirmed"}, status=status.HTTP_400_BAD_REQUEST)
         user.is_confirmed = True
         user.save()
+        token_email_confirmation.delete()
         
         return Response({"Info": "Email confirmed"}, status=status.HTTP_200_OK)
         
 
     
+class TutorDescriptionView(APIView):
+    """
+    View and update tutor description
+    """
+    permission_classes = (IsAuthenticated, IsTutor,)
+    serializer_class = TutorDescriptionSerializer
+    
+    def get(self, request):
+        """
+        Get tutor description
+        """
+        serializer = self.serializer_class(request.user.tutor)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def patch(self, request):
+        """
+        Update tutor description
+        """
+        serializer = self.serializer_class(request.user.tutor, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

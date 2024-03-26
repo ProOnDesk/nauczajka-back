@@ -1,5 +1,5 @@
 from django.dispatch import receiver
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
@@ -7,7 +7,7 @@ from django.conf import settings
 from .models import TokenEmailConfirmation
 from .utils.generate_confirmation_token import generate_confirmation_token
 
-from user.models import User
+from user.models import User, Tutor
 
 @receiver(post_save, sender=User)
 def email_token_confirmation_created(sender, instance, created, **kwargs):
@@ -17,10 +17,6 @@ def email_token_confirmation_created(sender, instance, created, **kwargs):
     if created:
         # Generate the confirmation token
         token = generate_confirmation_token(user=instance)
-        
-        # Printing for debugging purposes
-        for i in range(10):
-            print("Wyslano email na adres: ", instance.email)
         
         # Construct the confirmation URL
         confirm_account_url = f"{settings.FRONTED_URL}/account/confirm-email/?token={token.token}"
@@ -44,3 +40,22 @@ def email_token_confirmation_created(sender, instance, created, **kwargs):
         
         # Create and save the token
         token.save()
+        
+@receiver(pre_save, sender=Tutor)
+def validate_tutor(sender, instance, **kwargs):
+    """
+    Can't create a tutor instance if the user is not a tutor
+    """
+    if instance.user.is_tutor != True:
+        raise ValidationError("Invalid tutor instance. The user must be a tutor.")
+    
+@receiver(post_save, sender=User)
+def create_tutor_if_user_is_tutor(sender, instance, created, **kwargs):
+    """
+    Create a tutor instance if the user is a tutor
+    """
+    if created and instance.is_tutor:
+        Tutor.objects.create(user=instance) 
+        
+    if Tutor.objects.filter(user=instance).exists() and not instance.is_tutor:
+        Tutor.objects.get(user=instance).delete()
