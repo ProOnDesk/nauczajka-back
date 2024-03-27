@@ -2,22 +2,19 @@ from .models import User, TokenEmailConfirmation, Tutor
 
 from rest_framework.serializers import ModelSerializer, ValidationError
 
-
-class UserSerializer(ModelSerializer):
+    
+class CreateUserSerializer(ModelSerializer):
     """
     Serializer for the user object
     """
     class Meta:
         model = User
-        fields = ('email', 'first_name', 'last_name', 'password', 'is_tutor', 'profile_image')
+        fields = ('email', 'first_name', 'last_name', 'password', 'is_tutor')
         extra_kwargs = {
             'password': {
                 'write_only': True,
                 'min_length': 8
-            },
-            'profile_image': {
-                'read_only': True
-            },
+            }
         }
 
     def validate_email(self, email):
@@ -34,6 +31,46 @@ class UserSerializer(ModelSerializer):
         Create a new user with encrypted password and return it
         """
         return User.objects.create_user(**validated_data)
+   
+    
+class UserUpdateSerializer(ModelSerializer):
+    """
+    Serializer for the user profile update object
+    """
+    class Meta:
+        model = User
+        fields = ('email', 'first_name', 'last_name', 'profile_image', 'password', 'is_tutor', 'created_at')
+        extra_kwargs = {
+            'profile_image': {
+                'read_only': True
+            },
+            'password': {
+                'write_only': True,
+                'min_length': 8
+            },
+            'email': {
+                'read_only': True
+            },
+            'is_tutor': {
+                'read_only': True
+            },
+            'created_at': {
+                'read_only': True
+            }
+        }
+        
+    def update(self, instance, validated_data):
+        """
+        Update a user, setting the password correctly and return it
+        """
+        password = validated_data.pop('password', None)
+        
+        user = super().update(instance, validated_data)
+        
+        if password:
+            user.set_password(password)
+            user.save()
+        return user
     
 
 class TutorDescriptionSerializer(ModelSerializer):
@@ -59,8 +96,7 @@ class UserImageProfileSerializer(ModelSerializer):
     """
     class Meta:
         model = User
-        fields = ('id', 'profile_image',)
-        read_only_fields = ('id', )
+        fields = ('profile_image',)
         
     def update(self, instance, validated_data):
         """Update a user, setting the image correctly and return it."""
