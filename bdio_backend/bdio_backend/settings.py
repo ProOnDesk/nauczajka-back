@@ -133,7 +133,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = 'static/static/'
+MEDIA_URL = 'static/media/'
+
+MEDIA_ROOT = '../vol/web/media'
+STATIC_ROOT = '../vol/web/static'
+
+# DEFAULT USER PROFILE IMAGE PATH
+DEFAULT_USER_PROFILE_IMAGE = 'uploads/user/default.jpg' 
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -151,6 +158,7 @@ SPECTACULAR_SETTINGS = {
     'TITLE': 'API Documentation for bdio_backend API',
     'DESCRIPTION': 'bdio_backend API Documentation for the bdio_backend API that provides endpoints for user, tutors etc.',
     'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': True,
 }
 # JWT settings
 SIMPLE_JWT = {

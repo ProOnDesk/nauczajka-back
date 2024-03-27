@@ -9,12 +9,15 @@ class UserSerializer(ModelSerializer):
     """
     class Meta:
         model = User
-        fields = ('email', 'first_name', 'last_name', 'password', 'is_tutor')
+        fields = ('email', 'first_name', 'last_name', 'password', 'is_tutor', 'profile_image')
         extra_kwargs = {
             'password': {
                 'write_only': True,
                 'min_length': 8
-            }
+            },
+            'profile_image': {
+                'read_only': True
+            },
         }
 
     def validate_email(self, email):
@@ -49,3 +52,23 @@ class TokenEmailConfirmationSerializer(ModelSerializer):
     class Meta:
         model = TokenEmailConfirmation
         fields = ('token',)
+        
+class UserImageProfileSerializer(ModelSerializer):
+    """
+    Serializer for the user image profile object
+    """
+    class Meta:
+        model = User
+        fields = ('id', 'profile_image',)
+        read_only_fields = ('id', )
+        
+    def update(self, instance, validated_data):
+        """Update a user, setting the image correctly and return it."""
+        image = validated_data.pop('image', None)
+
+        user = super().update(instance, validated_data)
+
+        if image:
+            user.image = image
+            user.save()
+        return user

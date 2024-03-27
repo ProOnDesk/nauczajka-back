@@ -1,7 +1,9 @@
 """
 User related models
 """
+from os import path as os_path
 
+import uuid
 from django.db import models
 from django.contrib.auth.models import (
     AbstractBaseUser, BaseUserManager, PermissionsMixin
@@ -17,6 +19,12 @@ from django.utils.html import strip_tags
 
 from django.dispatch import receiver
 from django_rest_passwordreset.signals import reset_password_token_created
+
+def get_upload_user_path(instance, filename):
+    ext = os_path.splitext(filename)[1]
+    filename = f'{instance.id}{ext}'
+
+    return os_path.join('uploads', 'user',  filename)
 
 
 class UserManager(BaseUserManager):
@@ -67,6 +75,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     """
     Custom user model
     """
+    id = models.UUIDField(primary_key=True, editable=False, unique=True, default=uuid.uuid4)
     email = models.EmailField(max_length=255, unique=True)
     first_name = models.CharField(max_length=255, blank=True)
     last_name = models.CharField(max_length=255, blank=True)
@@ -74,6 +83,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_tutor = models.BooleanField(default=False)
     is_confirmed = models.BooleanField(default=False)
+    profile_image = models.ImageField(upload_to=get_upload_user_path, blank=True, null=True, default=os_path.join('uploads', 'user', 'default.png'))
     created_at = models.DateTimeField(auto_now_add=True)
     objects = UserManager()
 

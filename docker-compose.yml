@@ -8,8 +8,9 @@ services:
       - "8000:8000"
     volumes:
       - ./bdio_backend:/bdio_backend
+      - dev-static-data:/vol/web
     command: >
-      sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+      sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py move_media && python manage.py runserver 0.0.0.0:8000"
     depends_on:
       - bdio-db
     env_file:
@@ -25,3 +26,4 @@ services:
       - "5432:5432"
 volumes:
   postgres_data:
+  dev-static-data:

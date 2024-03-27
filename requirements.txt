@@ -5,3 +5,4 @@ drf-spectacular>=0.26.5<0.27
 django-cors-headers>=4.3.1,<4.4
 djangorestframework-simplejwt>=5.3.1,<5.4
 django-rest-passwordreset>=1.4.0,<1.5
+pillow>=10.2.0, <10.3
