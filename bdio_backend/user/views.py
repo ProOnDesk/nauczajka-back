@@ -4,8 +4,15 @@ from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from user.permissions import IsTutor
+from rest_framework.parsers import MultiPartParser, FormParser
+from django.conf import settings
 
-from .serializers import UserSerializer, TokenEmailConfirmationSerializer, TutorDescriptionSerializer
+from .serializers import (
+    UserSerializer,
+    TokenEmailConfirmationSerializer,
+    TutorDescriptionSerializer,
+    UserImageProfileSerializer,
+)
 
 from .models import TokenEmailConfirmation, User
 
@@ -88,6 +95,36 @@ class ConfirmUserView(APIView):
         return Response({"Info": "Email confirmed"}, status=status.HTTP_200_OK)
         
 
+class ProfileImageView(APIView):
+    """
+    Upload and delete user profile image
+    """
+    parser_classes = (MultiPartParser, FormParser,)
+    permission_classes = (IsAuthenticated,)
+    serializer_class = UserImageProfileSerializer
+    
+    def patch(self, request):
+        """
+        Upload user profile image
+        """
+        serializer = self.serializer_class(request.user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request):
+        """
+        Delete user profile image
+        """
+        user = request.user
+        if user.profile_image.name == settings.DEFAULT_USER_PROFILE_IMAGE:
+            return Response({"Error": "User has no profile image"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        user.profile_image.delete()
+        user.profile_image = settings.DEFAULT_USER_PROFILE_IMAGE
+        user.save()
+        return Response({"Info": "Image deleted."}, status=status.HTTP_200_OK)
     
 class TutorDescriptionView(APIView):
     """
