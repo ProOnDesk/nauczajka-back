@@ -1,17 +1,23 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework import generics 
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from user.permissions import IsTutor
 from rest_framework.parsers import MultiPartParser, FormParser
+
+from django.contrib.auth.hashers import check_password
 from django.conf import settings
 
+from drf_spectacular.utils import extend_schema
+
+from user.permissions import IsTutor
 from .serializers import (
-    UserSerializer,
+    CreateUserSerializer,
     TokenEmailConfirmationSerializer,
     TutorDescriptionSerializer,
     UserImageProfileSerializer,
+    UserUpdateSerializer,
 )
 
 from .models import TokenEmailConfirmation, User
@@ -20,7 +26,7 @@ class CreateUserView(APIView):
     """
     Create a new user
     """
-    serializer_class = UserSerializer
+    serializer_class = CreateUserSerializer
     
     def post(self, request):
         """
@@ -35,31 +41,35 @@ class CreateUserView(APIView):
         except Exception as e:
             if serializer.is_valid():
                 return Response({"Error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class DeleteUserView(APIView):
+    """
+    Delete user account
+    """
+    permission_classes = (IsAuthenticated,)
+
+    def delete(self, request):
+        """
+        Delete user account
+        """
+        user = request.user
+        user.delete()
+        return Response({"Info": "User deleted."}, status=status.HTTP_200_OK)
+
+
     
-    
-class ProfileUserView(APIView):
+class ProfileUserView(generics.RetrieveUpdateAPIView):
     """
     View and update user profile
     """
     permission_classes = (IsAuthenticated,)
-    serializer_class = UserSerializer
+    serializer_class = UserUpdateSerializer
     
-    def get(self, request):
-        """
-        Get user profile
-        """
-        serializer = self.serializer_class(request.user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    def patch(self, request):
-        """
-        Update user profile
-        """
-        serializer = self.serializer_class(request.user, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def get_object(self):
+        """Retrieve and return authenticated user"""
+        return self.request.user
+
     
 class ConfirmUserView(APIView):
     """
@@ -149,3 +159,36 @@ class TutorDescriptionView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class CheckUserPasswordView(APIView):
+    """
+    Check user password
+    """
+    permission_classes = (IsAuthenticated,)
+    @extend_schema(
+        request={
+            "application/json": {
+                "example": {"password": "example123"},
+            }
+        },
+        responses={
+            200: {"example": {'password_matches': True},
+                  "example": {'password_matches': False}},
+            400: {"example": {'error': 'Password is required.'}},
+        },
+        description="Check if the provided password matches the authenticated user's password."
+    )
+    def post(self, request):
+        """
+        Check user password
+        """
+        password = request.data.get('password')
+        if not password:
+            return Response({"Error": "Password is required."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        user = request.user
+        if not user.check_password(password):
+            return Response({"password_matches": False}, status=status.HTTP_200_OK)
+        
+        return Response({"password_matches": True}, status=status.HTTP_200_OK)
