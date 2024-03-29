@@ -202,7 +202,7 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
 
-FRONTED_URL = 'http://localhost:3000'
+FRONTED_URL = 'http://localhost:5173'
 BACKEND_URL = 'http://localhost:8000'
 
 CORS_ALLOW_ALL_ORIGINS = True
