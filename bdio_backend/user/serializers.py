@@ -1,4 +1,4 @@
-from .models import User, TokenEmailConfirmation, Tutor
+from .models import User, TokenEmailConfirmation
 
 from rest_framework.serializers import ModelSerializer, ValidationError
 
@@ -72,15 +72,6 @@ class UserUpdateSerializer(ModelSerializer):
             user.save()
         return user
     
-
-class TutorDescriptionSerializer(ModelSerializer):
-    """
-    Serializer for the tutor description object
-    """
-    class Meta:
-        model = Tutor
-        fields = ('description',)
-
 
 class TokenEmailConfirmationSerializer(ModelSerializer):
     """

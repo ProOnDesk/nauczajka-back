@@ -11,11 +11,9 @@ from django.conf import settings
 
 from drf_spectacular.utils import extend_schema
 
-from user.permissions import IsTutor
 from .serializers import (
     CreateUserSerializer,
     TokenEmailConfirmationSerializer,
-    TutorDescriptionSerializer,
     UserImageProfileSerializer,
     UserUpdateSerializer,
 )
@@ -135,31 +133,7 @@ class ProfileImageView(APIView):
         user.profile_image = settings.DEFAULT_USER_PROFILE_IMAGE
         user.save()
         return Response({"Info": "Image deleted."}, status=status.HTTP_200_OK)
-    
-class TutorDescriptionView(APIView):
-    """
-    View and update tutor description
-    """
-    permission_classes = (IsAuthenticated, IsTutor,)
-    serializer_class = TutorDescriptionSerializer
-    
-    def get(self, request):
-        """
-        Get tutor description
-        """
-        serializer = self.serializer_class(request.user.tutor)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    def patch(self, request):
-        """
-        Update tutor description
-        """
-        serializer = self.serializer_class(request.user.tutor, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
 
 class CheckUserPasswordView(APIView):
     """
