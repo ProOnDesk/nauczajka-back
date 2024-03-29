@@ -1,6 +1,7 @@
 from .models import Tutor
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+from django.core.exceptions import ValidationError
 
 @receiver(pre_save, sender=Tutor)
 def validate_tutor(sender, instance, **kwargs):

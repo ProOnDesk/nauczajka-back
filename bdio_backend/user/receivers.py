@@ -7,6 +7,7 @@ from django.conf import settings
 from .models import TokenEmailConfirmation
 from .utils.generate_confirmation_token import generate_confirmation_token
 
+from tutor.models import Tutor
 from user.models import User
 
 @receiver(post_save, sender=User)
