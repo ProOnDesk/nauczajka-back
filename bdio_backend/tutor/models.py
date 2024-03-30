@@ -13,7 +13,7 @@ class Tutor(models.Model):
     def __str__(self):
         return f"Tutor - {self.user.email}"
     
-    
+
 class Skills(models.Model):
     """
     Skills model
