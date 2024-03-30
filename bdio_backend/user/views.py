@@ -22,7 +22,7 @@ from .serializers import (
 )
 
 from .models import TokenEmailConfirmation, User
-from tutor.models import Tutor
+from tutor.models import Tutor, TutorRatings
 
 class CreateUserView(APIView):
     """
@@ -211,7 +211,7 @@ class RateTutorView(APIView):
         """
         user = request.user
         try:
-            tutor_rating = user.student_ratings.get(tutor_id=tutor_id)
+            tutor_rating = TutorRatings.objects.get(tutor_id=tutor_id)
         except TutorRatings.DoesNotExist:
             return Response({"Error": _("Rating not found.")}, status=status.HTTP_400_BAD_REQUEST)
         
@@ -231,6 +231,6 @@ class RatingsMeView(APIView):
         Get user ratings
         """
         user = request.user
-        ratings = user.student_ratings.all()
+        ratings = TutorRatings.objects.filter(student=user)
         serializer = self.serializer_class(ratings, many=True)
         return Response({"ratings": serializer.data}, status=status.HTTP_200_OK)
