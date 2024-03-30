@@ -1,5 +1,5 @@
 from django.dispatch import receiver
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
@@ -41,7 +41,7 @@ def email_token_confirmation_created(sender, instance, created, **kwargs):
         
         # Create and save the token
         token.save()
-    
+
 @receiver(post_save, sender=User)
 def create_tutor_if_user_is_tutor(sender, instance, created, **kwargs):
     """
@@ -50,5 +50,5 @@ def create_tutor_if_user_is_tutor(sender, instance, created, **kwargs):
     if created and instance.is_tutor:
         Tutor.objects.create(user=instance) 
         
-    if Tutor.objects.filter(user=instance).exists() and not instance.is_tutor:
+    if not instance.is_tutor and Tutor.objects.filter(user=instance).exists():
         Tutor.objects.get(user=instance).delete()

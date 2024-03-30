@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'rest_framework_simplejwt',
     'django_rest_passwordreset',
+    'django_filters',
+
 
 
     
@@ -52,6 +54,7 @@ INSTALLED_APPS = [
     'core',
     'user',
     'tutor',
+    
 ]
 
 MIDDLEWARE = [
@@ -122,9 +125,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'pl-pl'  
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Warsaw'
 
 USE_I18N = True
 
