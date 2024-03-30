@@ -1,10 +1,11 @@
-from .models import Tutor, Skills, TutorScheduleItems
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
+from .models import Tutor, Skills, TutorScheduleItems, TutorRatings
+from rest_framework.serializers import ModelSerializer, SerializerMethodField, CharField
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from user.serializers import UserSerializer
 from django.utils.translation import gettext as _
+
 
 class TutorDescriptionSerializer(ModelSerializer):
     """
@@ -58,6 +59,7 @@ class TutorSkillsSerializer(ModelSerializer):
             tutor.save()
         return tutor
 
+
 class TutorScheduleItemsSerializer(ModelSerializer):
     """
     Serializer for the tutor schedule items object
@@ -71,64 +73,40 @@ class TutorSerializer(ModelSerializer):
     """
     Serializer for the tutor object
     """
-    first_name = SerializerMethodField() 
-    last_name = SerializerMethodField() 
-    profile_image = SerializerMethodField()
+    first_name = CharField(source='user.first_name') 
+    last_name = CharField(source='user.last_name') 
+    profile_image = CharField(source='user.profile_image.url')
 
     class Meta:
         model = Tutor 
         fields = ('id', 'first_name', 'last_name', 'profile_image', 'description', 'skills', 'avg_rating')
 
-    def get_first_name(self, obj):
-        """
-        Method to get user first name
-        """
-        return obj.user.first_name
 
-    def get_last_name(self, obj):
-        """
-        Method to get user last name
-        """
-        return obj.user.last_name
+class RatingsSerializer(ModelSerializer):
     
-    def get_profile_image(self, obj):
-        """
-        Method to get user profile image
-        """
-        return obj.user.profile_image.url
+    student_first_name = CharField(source='student.first_name')
+    student_last_name = CharField(source='student.last_name')
     
-    
+    class Meta:
+        model = TutorRatings
+        fields = ('rating', 'review', 'created_at', 'student_first_name', 'student_last_name')
+        
+         
 class TutorDetailSerializer(ModelSerializer):
     """
     Serializer for the tutor detail object
     """
-    first_name = SerializerMethodField() 
-    last_name = SerializerMethodField() 
-    profile_image = SerializerMethodField()
+    first_name = CharField(source='user.first_name') 
+    last_name = CharField(source='user.last_name') 
+    profile_image = CharField(source='user.profile_image.url')
     
     tutor_schedule_items = TutorScheduleItemsSerializer(many=True)
+    tutor_ratings = RatingsSerializer(many=True)
+
     
     class Meta:
         model = Tutor
-        fields = ('first_name', 'last_name', 'profile_image', 'description', 'skills', 'avg_rating', 'tutor_schedule_items')
-    
-    def get_first_name(self, obj):
-        """
-        Method to get user first name
-        """
-        return obj.user.first_name
-
-    def get_last_name(self, obj):
-        """
-        Method to get user last name
-        """
-        return obj.user.last_name
-    
-    def get_profile_image(self, obj):
-        """
-        Method to get user profile image
-        """
-        return obj.user.profile_image.url
+        fields = ('first_name', 'last_name', 'profile_image', 'description', 'skills', 'avg_rating', 'tutor_ratings', 'tutor_schedule_items', )
     
     
 class TutorMeScheduleItemsSerializer(ModelSerializer):

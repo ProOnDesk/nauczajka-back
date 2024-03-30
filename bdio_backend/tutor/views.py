@@ -13,6 +13,9 @@ from tutor.permissions import IsTutor
 from tutor.models import Skills, Tutor, TutorScheduleItems
 
 from drf_spectacular.utils import extend_schema
+from django_filters.rest_framework import DjangoFilterBackend
+
+from .filters import TutorFilter
 
 from .serializers import (
     TutorDescriptionSerializer,
@@ -89,6 +92,21 @@ class SkillsListView(APIView):
 
 
 @extend_schema(tags=['Tutor all'])
+class TutorListView(generics.ListAPIView):
+    """
+    Get all tutors
+    """
+    authentication_classes = []
+    serializer_class = TutorSerializer
+    queryset = Tutor.objects.all()
+    permission_classes = (AllowAny,)
+    authentication_classes = []
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = TutorFilter
+    
+    
+
+@extend_schema(tags=['Tutor all'])
 class TutorViewSet(viewsets.ViewSet):
     authentication_classes = []
     serializer_class = TutorSerializer
@@ -100,15 +118,7 @@ class TutorViewSet(viewsets.ViewSet):
         """
         serializer = self.serializer_class(self.queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
 
-    def retrieve(self, request, pk=None):
-        """
-        Get tutor by id
-        """
-        tutor = Tutor.objects.get(pk=pk)
-        serializer = self.serializer_class(tutor)
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
 @extend_schema(tags=['Tutor all'])
 class TutorDetailView(generics.RetrieveAPIView):

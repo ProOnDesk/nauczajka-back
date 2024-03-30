@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'rest_framework_simplejwt',
     'django_rest_passwordreset',
+    'django_filters',
+
 
 
     
@@ -52,6 +54,7 @@ INSTALLED_APPS = [
     'core',
     'user',
     'tutor',
+    
 ]
 
 MIDDLEWARE = [
