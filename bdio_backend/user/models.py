@@ -54,11 +54,11 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
     
-    def create_tutor(self, email, password):
+    def create_tutor(self, email, password, **extra_fields):
         """
         Create and return a tutor
         """
-        user = self.create_user(email, password)
+        user = self.create_user(email, password, **extra_fields)
         user.is_tutor = True
         user.save(using=self._db)
         return user

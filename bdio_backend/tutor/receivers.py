@@ -18,6 +18,6 @@ def update_tutor_avg_rating(sender, instance, **kwargs):
     Signal to update the average rating for the tutor whenever a new rating is added
     """
     tutor = instance.tutor
-    avg = tutor.tutor_ratings.aggregate(Avg('rating'))['rating__avg']
-    tutor.avg_rating = avg if avg else 0
+    avg_rating = TutorRatings.objects.filter(tutor=tutor).aggregate(Avg('rating'))['rating__avg']
+    tutor.avg_rating = avg_rating if avg_rating else 0
     tutor.save()

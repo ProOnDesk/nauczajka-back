@@ -15,7 +15,7 @@ def email_token_confirmation_created(sender, instance, created, **kwargs):
     """
     Send an email with a token confirmation after the user is saved
     """
-    if created:
+    if created and settings.IS_CUSTOM_CONFIRM_EMAIL_REQUIRED:
         # Generate the confirmation token
         token = generate_confirmation_token(user=instance)
         
@@ -48,7 +48,7 @@ def create_tutor_if_user_is_tutor(sender, instance, created, **kwargs):
     Create a tutor instance if the user is a tutor
     """
     if created and instance.is_tutor:
-        Tutor.objects.create(user=instance) 
+        Tutor.objects.create(user=instance).save()
         
     if not instance.is_tutor and Tutor.objects.filter(user=instance).exists():
         Tutor.objects.get(user=instance).delete()
