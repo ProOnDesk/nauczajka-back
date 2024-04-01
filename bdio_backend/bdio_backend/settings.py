@@ -226,3 +226,6 @@ DJANGO_REST_MULTITOKENAUTH_RESET_TOKEN_EXPIRY_TIME = 0.5 # 30 minutes
 
 # confirm email token expiry time
 # CUSTOM_CONFIRM_EMAIL_TOKEN_EXPIRY_TIME = 60 * 60 * 24 # 24 hours
+
+# Is email confirmation required
+IS_CUSTOM_CONFIRM_EMAIL_REQUIRED = True

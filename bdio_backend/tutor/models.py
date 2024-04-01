@@ -1,5 +1,7 @@
 from django.db import models
 from user.models import User
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
 class Tutor(models.Model):
     """
@@ -35,16 +37,40 @@ class TutorScheduleItems(models.Model):
     def __str__(self):
         return f"ScheduleItem - {self.tutor.user.email} - {self.start_time} - {self.end_time}"
     
+    def clean(self):
+        """
+        Walidacja zakresu czasowego, aby uniknąć nakładających się terminów.
+        """
+        # Sprawdź czy start_time nie jest późniejszy niż end_time
+        if self.start_time >= self.end_time:
+            raise ValidationError("Czas rozpoczęcia musi być wcześniejszy niż czas zakończenia.")
+        
+        # Sprawdź czy istnieją już inne TutorScheduleItems nakładające się na ten przedział czasowy
+        overlapping_items = TutorScheduleItems.objects.filter(
+            tutor=self.tutor,
+            start_time__lt=self.end_time,
+            end_time__gt=self.start_time
+        ).exclude(pk=self.pk)  # Wyklucz aktualny obiekt z wyników, gdy edytujemy istniejący obiekt
+        
+        if overlapping_items.exists():
+            raise ValidationError(_("Your schedule is overlapping with another schedule."))
+    
     
 class TutorRatings(models.Model):
     """
     Tutors ratings model
     """
+    id = models.AutoField(primary_key=True)
     tutor = models.ForeignKey(Tutor, on_delete=models.CASCADE, related_name='tutor_ratings')
-    student = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student_rating')
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='student_ratings')
     rating = models.SmallIntegerField(default=5)
     review = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
         return f"Rating - {self.rating} for tutor({self.tutor.user.email}) from ({self.student.email}) "
+    
+    def validate_unique(self, *args, **kwargs):
+        super().validate_unique(*args, **kwargs)
+        if TutorRatings.objects.filter(tutor=self.tutor, student=self.student).exists():
+            raise ValidationError(_("You have already rated this tutor."))
