@@ -9,6 +9,7 @@ from datetime import timedelta
 from django.core.exceptions import ValidationError
 from django.conf import settings
 
+
 class Command(BaseCommand):
     help = 'Creates a sample database with tutors, users, skills, etc.'
 
@@ -20,23 +21,25 @@ class Command(BaseCommand):
         try:
             number_of_users = kwargs['number_of_users']
             no_schedule = kwargs['no_schedule']
-            
-            # create admin user
+
+            # Create admin user
             if not User.objects.filter(email="admin@admin.pl").exists():
                 User.objects.create_superuser(email="admin@admin.pl", password="admin")
-            
-            fake = Faker('pl_PL')  
-            
+
+            fake = Faker('pl_PL')
+
             settings.IS_CUSTOM_CONFIRM_EMAIL_REQUIRED = False
-            
-            # Tworzenie umiejętności
-            skills_list = ['Angielski', 'Francuski', 'Matematyka', 'Informatyka', 'Fizyka', 'Chemia', 'Biologia', 'Polski', 'Hiszpański', 'Niemiecki', 'Włoski', 'Rosyjski', 'Historia', 'Geografia', 'Muzyka', 'Plastyka', 'WOS', 'WF', 'Technika', 'Inne']
+
+            # Creating skills
+            skills_list = ['Angielski', 'Francuski', 'Matematyka', 'Informatyka', 'Fizyka', 'Chemia', 'Biologia', 'Polski', 'Hiszpański', 'Niemiecki', 'Włoski',
+                           'Rosyjski', 'Historia', 'Geografia', 'Muzyka', 'Plastyka', 'WOS', 'Technika',]
+
             skills_objs = []
             for skill_name in skills_list:
                 skill_obj, created = Skills.objects.get_or_create(skill=skill_name)
                 skills_objs.append(skill_obj)
 
-            # Pobranie aktualnego czasu
+            # Getting current time
             date_now = now()
             second = date_now.second
             minute = date_now.minute
@@ -46,18 +49,18 @@ class Command(BaseCommand):
             year = date_now.year
             to_email_str = f"{year}{month}{day}{hour}{minute}{second}"
 
-            # Tworzenie użytkowników
+            # Creating users
             for i in range(number_of_users):
                 first_name = fake.first_name()
                 last_name = fake.last_name()
-                password = 'haslo123'  #
+                password = 'password123'  # For simplicity, use a constant password
                 is_tutor = random.choice([True, False])
 
                 if is_tutor:
                     email = f"{to_email_str}{i}@stud.prz.edu.pl"
-                else:   
+                else:
                     email = fake.email()
-                    
+
                 user_obj = User.objects.create_user(email=email, password=password, first_name=first_name, last_name=last_name, is_confirmed=True, is_tutor=is_tutor)
 
                 if user_obj.is_tutor:
@@ -70,12 +73,14 @@ class Command(BaseCommand):
                     tutor.save()
                 user_obj.save()
 
+            # Assigning ratings to tutors
             for user in User.objects.filter(is_tutor=False):
                 for tutor in random.sample(list(User.objects.filter(is_tutor=True)), int(User.objects.filter(is_tutor=False).count() / 5)):
                     if not TutorRatings.objects.filter(tutor=tutor.tutor, student=user).exists():
                         tutor = TutorRatings.objects.create(tutor=tutor.tutor, student=user, rating=random.randint(3, 5), review=fake.text())
                         tutor.save()
-                    
+
+            # Creating tutor schedules
             if not no_schedule:
                 current_time = now()
                 for tutor in Tutor.objects.all():
@@ -91,10 +96,10 @@ class Command(BaseCommand):
                                 except ValidationError:
                                     pass
 
-            settings.IS_CUSTOM_CONFIRM_EMAIL_REQUIRED = True                 
-            self.stdout.write(self.style.SUCCESS('Pomyślnie utworzono przykładową bazę danych!'))
-            
+            settings.IS_CUSTOM_CONFIRM_EMAIL_REQUIRED = True
+            self.stdout.write(self.style.SUCCESS('Successfully created sample database!'))
+
         except Exception as e:
             settings.IS_CUSTOM_CONFIRM_EMAIL_REQUIRED = True
-            self.stdout.write(self.style.ERROR(f'Wystąpił błąd: {e}'))
+            self.stdout.write(self.style.ERROR(f'An error occurred: {e}'))
             raise e
