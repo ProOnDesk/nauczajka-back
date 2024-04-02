@@ -64,6 +64,10 @@ class TutorSkillsView(APIView):
         """
         Update tutor skills
         """
+        if not request.data.get('skills'):
+            tutor = Tutor.objects.get(user=request.user).skills.clear()
+            return Response({"skills": []}, status=status.HTTP_200_OK)
+        
         serializer = self.serializer_class(request.user.tutor, data=request.data)
         if serializer.is_valid():
             serializer.save()
