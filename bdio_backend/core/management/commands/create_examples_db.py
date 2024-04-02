@@ -21,6 +21,10 @@ class Command(BaseCommand):
             number_of_users = kwargs['number_of_users']
             no_schedule = kwargs['no_schedule']
             
+            # create admin user
+            if not User.objects.filter(email="admin@admin.pl").exists():
+                User.objects.create_superuser(email="admin@admin.pl", password="admin")
+            
             fake = Faker('pl_PL')  
             
             settings.IS_CUSTOM_CONFIRM_EMAIL_REQUIRED = False
