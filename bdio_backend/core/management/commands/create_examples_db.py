@@ -31,7 +31,8 @@ class Command(BaseCommand):
             settings.IS_CUSTOM_CONFIRM_EMAIL_REQUIRED = False
 
             # Creating skills
-            skills_list = ['English', 'French', 'Mathematics', 'Computer Science', 'Physics', 'Chemistry', 'Biology', 'Polish', 'Spanish', 'German', 'Italian', 'Russian', 'History', 'Geography', 'Music', 'Art', 'Civics', 'Physical Education', 'Technology', 'Other']
+            skills_list = ['Angielski', 'Francuski', 'Matematyka', 'Informatyka', 'Fizyka', 'Chemia', 'Biologia', 'Polski', 'Hiszpański', 'Niemiecki', 'Włoski',
+                           'Rosyjski', 'Historia', 'Geografia', 'Muzyka', 'Plastyka', 'WOS', 'Technika',]
             skills_objs = []
             for skill_name in skills_list:
                 skill_obj, created = Skills.objects.get_or_create(skill=skill_name)
