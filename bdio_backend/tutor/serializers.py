@@ -120,11 +120,24 @@ class TutorMeScheduleItemsSerializer(ModelSerializer):
         fields = ('id', 'start_time', 'end_time')
         read_only_fields = ('id',)
 
-
+    def validate(self, data):
+        """
+        Validate the schedule item
+        """
+        try: 
+            tutor = self.context['tutor']
+            schedule_item = TutorScheduleItems(tutor=tutor, **data)
+            schedule_item.clean()
+        except ValidationError as e:
+            raise serializers.ValidationError(_(e.message))
+        
+        return data
+    
     def create(self, validated_data):
         """
         Create a tutor schedule item
         """
         tutor = self.context['tutor']
         schedule_item = TutorScheduleItems.objects.create(tutor=tutor, **validated_data)
+        schedule_item.clean()
         return schedule_item

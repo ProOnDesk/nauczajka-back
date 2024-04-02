@@ -5,7 +5,7 @@ from .views import (
     TutorViewSet,
     TutorListView,
     TutorDetailView,
-    DeleteTutorMeScheduleItemsView,
+    DeleteTutorMeScheduleItemView,
     RetrieveCreateTutorMeScheduleItemsView,
 )
 from django.urls import path, include
@@ -21,7 +21,7 @@ urlpatterns = [
     path('skills/me/', TutorSkillsView.as_view(), name='skills-me'),
     path('skills/', SkillsListView.as_view(), name='skills-list'),
     path('schedule/me/', RetrieveCreateTutorMeScheduleItemsView.as_view(), name='schedule-me'),
-    path('schedule/me/<int:id>/', DeleteTutorMeScheduleItemsView.as_view(), name='schedule-me-delete'),
+    path('schedule/me/<int:id>/', DeleteTutorMeScheduleItemView.as_view(), name='schedule-me-delete'),
     path('details/<int:id>/', TutorDetailView.as_view(), name='tutor-details'),
     path('search/', TutorListView.as_view(), name='tutor-search'),
     path('', include(router.urls)),

@@ -84,14 +84,14 @@ class TutorSkillsView(APIView):
 @extend_schema(tags=['Tutor Skills'])
 class SkillsListView(APIView):
     authentication_classes = []
-    serializer = SkillsSerializer
+    serializer_class = SkillsSerializer
     
     def get(self, request):
         """
         Get all skills
         """
         skills = Skills.objects.all()
-        serializer = self.serializer(skills, many=True)
+        serializer = self.serializer_class(skills, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -157,19 +157,37 @@ class RetrieveCreateTutorMeScheduleItemsView(APIView):
         """
         Create tutor schedule item
         """
-        serializer = self.serializer_class(data=request.data, context={'tutor': request.user.tutor})  # Pass request object to context
+        serializer = self.serializer_class(data=request.data, context={'tutor': request.user.tutor})  
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            if 'non_field_errors' in serializer.errors:
+                return Response({"Error": serializer.errors['non_field_errors'][0]}, status=status.HTTP_400_BAD_REQUEST)
+            
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request):
+        """
+        Delete all tutor schedule items
+        """
+        schedule_items = request.user.tutor.tutor_schedule_items.all()
+        if not schedule_items:
+            return Response({"Info": _("No schedule items found.")}, status=status.HTTP_404_NOT_FOUND)
+        
+        schedule_items.delete()
+        return Response({"Info": _("All schedule items deleted successfully.")}, status=status.HTTP_200_OK)
 
 
 @extend_schema(tags=['Tutor Schedule'])
-class DeleteTutorMeScheduleItemsView(APIView):
+class DeleteTutorMeScheduleItemView(APIView):
     """
     Delete tutor schedule item
     """
     permission_classes = (IsAuthenticated, IsTutor,)
+    serializer_class = TutorMeScheduleItemsSerializer
     
     def delete(self, request, id):
         """

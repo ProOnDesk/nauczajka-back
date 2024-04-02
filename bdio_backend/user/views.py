@@ -46,11 +46,12 @@ class CreateUserView(APIView):
                 return Response({"Error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class DeleteUserView(APIView):
+class DeleteUserView(generics.DestroyAPIView):
     """
     Delete user account
     """
     permission_classes = (IsAuthenticated,)
+    serializer_class = UserUpdateSerializer
 
     def delete(self, request):
         """
