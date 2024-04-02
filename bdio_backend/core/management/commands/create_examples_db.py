@@ -33,6 +33,7 @@ class Command(BaseCommand):
             # Creating skills
             skills_list = ['Angielski', 'Francuski', 'Matematyka', 'Informatyka', 'Fizyka', 'Chemia', 'Biologia', 'Polski', 'Hiszpański', 'Niemiecki', 'Włoski',
                            'Rosyjski', 'Historia', 'Geografia', 'Muzyka', 'Plastyka', 'WOS', 'Technika',]
+
             skills_objs = []
             for skill_name in skills_list:
                 skill_obj, created = Skills.objects.get_or_create(skill=skill_name)
