@@ -10,6 +10,7 @@ class Tutor(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     description = models.TextField(blank=True, null=True)
     skills = models.ManyToManyField('Skills', related_name='tutors')
+    price = models.IntegerField(default=0)
     avg_rating = models.DecimalField(max_digits=2, decimal_places=1, default=0.0)
 
     def __str__(self):

@@ -16,7 +16,31 @@ class TutorDescriptionSerializer(ModelSerializer):
     class Meta:
         model = Tutor
         fields = ('description',)
+
+
+class TutorPriceSerializer(ModelSerializer):
+    """
+    Serializer for the tutor price object
+    """
+    
+    
+    class Meta:
+        model = Tutor
+        fields = ('price',)
+
+    def validate(self, data):
+        """
+        Validate the price
+        """
+        if data['price'] < 0:
+            raise ValidationError(_("Price cannot be negative."))
         
+        if data['price'] > 1000000:
+            raise ValidationError(_("Price cannot be more than 1000000."))
+        
+        return data
+
+      
         
 class SkillsSerializer(ModelSerializer):
     """
@@ -26,8 +50,7 @@ class SkillsSerializer(ModelSerializer):
     
     class Meta:
         model = Skills
-        fields = ('skill',)
-        
+        fields = ('skill',) 
         
         
 class TutorSkillsSerializer(ModelSerializer):
@@ -79,7 +102,7 @@ class TutorSerializer(ModelSerializer):
 
     class Meta:
         model = Tutor 
-        fields = ('id', 'first_name', 'last_name', 'profile_image', 'description', 'skills', 'avg_rating')
+        fields = ('id', 'first_name', 'last_name', 'profile_image', 'description', 'price', 'avg_rating', 'skills',)
 
 
 class RatingsSerializer(ModelSerializer):
@@ -106,7 +129,7 @@ class TutorDetailSerializer(ModelSerializer):
     
     class Meta:
         model = Tutor
-        fields = ('first_name', 'last_name', 'profile_image', 'description', 'skills', 'avg_rating', 'tutor_ratings', 'tutor_schedule_items', )
+        fields = ('first_name', 'last_name', 'profile_image', 'description', 'skills', 'avg_rating', 'price', 'tutor_ratings', 'tutor_schedule_items', )
     
     
 class TutorMeScheduleItemsSerializer(ModelSerializer):

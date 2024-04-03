@@ -4,6 +4,7 @@ from .views import (
     SkillsListView,
     TutorViewSet,
     TutorListView,
+    TutorPriceView,
     TutorDetailView,
     DeleteTutorMeScheduleItemView,
     RetrieveCreateTutorMeScheduleItemsView,
@@ -18,6 +19,7 @@ router.register(r'all', TutorViewSet, basename='tutors')
 
 urlpatterns = [
     path('description/me/', TutorDescriptionView.as_view(), name='create'),
+    path('price/me/', TutorPriceView.as_view(), name='price-me'),
     path('skills/me/', TutorSkillsView.as_view(), name='skills-me'),
     path('skills/', SkillsListView.as_view(), name='skills-list'),
     path('schedule/me/', RetrieveCreateTutorMeScheduleItemsView.as_view(), name='schedule-me'),
