@@ -102,7 +102,7 @@ class TutorSerializer(ModelSerializer):
 
     class Meta:
         model = Tutor 
-        fields = ('id', 'first_name', 'last_name', 'profile_image', 'description', 'skills', 'avg_rating')
+        fields = ('id', 'first_name', 'last_name', 'profile_image', 'description', 'price', 'avg_rating', 'skills',)
 
 
 class RatingsSerializer(ModelSerializer):
@@ -129,7 +129,7 @@ class TutorDetailSerializer(ModelSerializer):
     
     class Meta:
         model = Tutor
-        fields = ('first_name', 'last_name', 'profile_image', 'description', 'skills', 'avg_rating', 'tutor_ratings', 'tutor_schedule_items', )
+        fields = ('first_name', 'last_name', 'profile_image', 'description', 'skills', 'avg_rating', 'price', 'tutor_ratings', 'tutor_schedule_items', )
     
     
 class TutorMeScheduleItemsSerializer(ModelSerializer):
