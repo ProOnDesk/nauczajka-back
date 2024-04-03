@@ -16,7 +16,31 @@ class TutorDescriptionSerializer(ModelSerializer):
     class Meta:
         model = Tutor
         fields = ('description',)
+
+
+class TutorPriceSerializer(ModelSerializer):
+    """
+    Serializer for the tutor price object
+    """
+    
+    
+    class Meta:
+        model = Tutor
+        fields = ('price',)
+
+    def validate(self, data):
+        """
+        Validate the price
+        """
+        if data['price'] < 0:
+            raise ValidationError(_("Price cannot be negative."))
         
+        if data['price'] > 1000000:
+            raise ValidationError(_("Price cannot be more than 1000000."))
+        
+        return data
+
+      
         
 class SkillsSerializer(ModelSerializer):
     """
@@ -26,8 +50,7 @@ class SkillsSerializer(ModelSerializer):
     
     class Meta:
         model = Skills
-        fields = ('skill',)
-        
+        fields = ('skill',) 
         
         
 class TutorSkillsSerializer(ModelSerializer):
