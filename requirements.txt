@@ -8,4 +8,6 @@ django-rest-passwordreset>=1.4.0,<1.5
 pillow>=10.2.0, <10.3
 django-filter>=24.2, <24.3
 Faker>=24.4.0, <24.5
-
+channels>=4.1.0, <4.2
+daphne>=4.1.0, <4.2
+channels-redis>=4.2.0, <4.3
