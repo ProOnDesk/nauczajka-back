@@ -32,6 +32,11 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    # Third-party apps
+    # 'daphne',
+    'channels',
+    
+    # Django apps    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -46,16 +51,12 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'django_rest_passwordreset',
     'django_filters',
-
-
-
     
     # Local apps
     'core',
     'user',
     'tutor',
     'chat',
-    
 ]
 
 MIDDLEWARE = [
