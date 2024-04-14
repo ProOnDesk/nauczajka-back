@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'django_rest_passwordreset',
     'django_filters',
+    'django_extensions',
     
     # Local apps
     'core',
@@ -244,3 +245,10 @@ DJANGO_REST_MULTITOKENAUTH_RESET_TOKEN_EXPIRY_TIME = 0.5 # 30 minutes
 
 # Is email confirmation required
 IS_CUSTOM_CONFIRM_EMAIL_REQUIRED = True
+
+# Graph settings
+
+GRAPH_MODELS = {
+  'all_applications': True,
+  'group_models': True,
+}

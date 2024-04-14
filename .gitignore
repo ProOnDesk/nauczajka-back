@@ -7,7 +7,7 @@ db.sqlite3
 
 # Backup files # 
 *.bak 
-
+*.dot
 # If you are using PyCharm # 
 # User-specific stuff
 .idea/**/workspace.xml
