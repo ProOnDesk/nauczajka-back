@@ -33,7 +33,7 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     # Third-party apps
-    # 'daphne',
+    'daphne',
     'channels',
     
     # Django apps    
@@ -90,15 +90,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'bdio_backend.wsgi.application'
 
-# Channels settings
+# Daphne ASGI application
 ASGI_APPLICATION = 'bdio_backend.asgi.application'
+
+# Channels settings
 CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            'hosts': [('localhost', 6379)],
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("redis", 6379)],
         },
-    }
+    },
 }
 
 # Database
