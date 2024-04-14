@@ -49,13 +49,14 @@ class UserUpdateSerializer(ModelSerializer):
     """
     class Meta:
         model = User
-        fields = ('email', 'first_name', 'last_name', 'profile_image', 'password', 'is_tutor', 'created_at')
+        fields = ('id', 'email', 'first_name', 'last_name', 'profile_image', 'password', 'is_tutor', 'created_at')
         extra_kwargs = {
             'profile_image': {'read_only': True},
             'password': {'write_only': True, 'min_length': 8},
             'email': {'read_only': True},
             'is_tutor': {'read_only': True},
-            'created_at': {'read_only': True}
+            'created_at': {'read_only': True},
+            'id': {'read_only': True}
         }
         
     def update(self, instance, validated_data):

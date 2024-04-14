@@ -13,6 +13,7 @@ urlpatterns = [
     path('api/swagger/docs/', SpectacularSwaggerView.as_view(url_name='api-schema'), name='api-docs'),
     path('api/', include('api.urls')),
     path('api/user/', include('user.urls')),
+    path('api/chat/', include('chat.urls')),
 ] 
 
 if settings.DEBUG == True:

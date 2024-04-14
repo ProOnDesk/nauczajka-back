@@ -32,6 +32,11 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    # Third-party apps
+    'daphne',
+    'channels',
+    
+    # Django apps    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -46,15 +51,12 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'django_rest_passwordreset',
     'django_filters',
-
-
-
     
     # Local apps
     'core',
     'user',
     'tutor',
-    
+    'chat',
 ]
 
 MIDDLEWARE = [
@@ -87,6 +89,19 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'bdio_backend.wsgi.application'
+
+# Daphne ASGI application
+ASGI_APPLICATION = 'bdio_backend.asgi.application'
+
+# Channels settings
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("redis", 6379)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
