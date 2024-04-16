@@ -59,7 +59,7 @@
 			.confirmEmailButton {
 				display: flex;
 				justify-content: center;
-				align-items: end;
+				align-items: center;
 				flex-direction: column;
 				margin-top: 20px;
 				margin-bottom: 20px;
@@ -134,7 +134,12 @@
 				<br />
 				<p>Kliknij poniższy link, aby aktywować swoje konto:</p>
 				<br />
-				<p>{{ confirm_account_url }}</p>
+				<div class="confirmEmailButton">
+					<button class="EmailButton">
+						<a href="{{ confirm_account_url }}">Potwierdź</a>
+					</button>
+				</div>
+
 				<br />
 				<p>
 					Jeśli nie rejestrowałeś/-aś się na platformie Nauczajka, zignoruj tę
@@ -144,20 +149,17 @@
 				<p>
 					Jeśli napotkasz jakiekolwiek problemy z przeglądarką, która nie
 					obsługuje klikalnych linków, skopiuj i wklej poniższy adres URL do
-					paska adresu przeglądarki.
+					paska adresu przeglądarki:
 				</p>
+
+				<br />
+				<p>{{ confirm_account_url }}</p>
 
 				<br />
 				<p>Dziękujemy i życzymy owocnej pracy na platformie Nauczajka!</p>
 				<br />
 				<p>Z poważaniem, Zespół Nauczajka</p>
 				<br />
-
-				<div class="confirmEmailButton">
-					<button class="EmailButton">
-						<a href="{{ confirm_account_url }}">Potwierdź</a>
-					</button>
-				</div>
 			</div>
 		</div>
 	</body>
