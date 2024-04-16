@@ -70,7 +70,6 @@
 				font-size: 18px;
 				border: 1px solid #ddd;
 				border-radius: 12px;
-				color: #fff;
 				letter-spacing: 3px;
 				text-transform: uppercase;
 				font-weight: 600;
@@ -79,8 +78,20 @@
 				transition: background-color 0.3s;
 			}
 
+			a {
+				padding: 12px 20px;
+				text-align: center;
+				text-decoration: none;
+				color: #ddd;
+				transition: color 0.3s;
+			}
+
 			.EmailButton:hover {
 				background-color: #6b56ee;
+			}
+
+			a:hover {
+				color: #fff;
 			}
 		</style>
 	</head>
@@ -133,10 +144,8 @@
 				<p>
 					Jeśli napotkasz jakiekolwiek problemy z przeglądarką, która nie
 					obsługuje klikalnych linków, skopiuj i wklej poniższy adres URL do
-					paska adresu przeglądarki:
+					paska adresu przeglądarki.
 				</p>
-				<p>{{ confirm_account_url }}</p>
-				<br />
 
 				<br />
 				<p>Dziękujemy i życzymy owocnej pracy na platformie Nauczajka!</p>
@@ -145,7 +154,9 @@
 				<br />
 
 				<div class="confirmEmailButton">
-					<button class="EmailButton">Potwierdź</button>
+					<button class="EmailButton">
+						<a href="{{ confirm_account_url }}">Potwierdź</a>
+					</button>
 				</div>
 			</div>
 		</div>
