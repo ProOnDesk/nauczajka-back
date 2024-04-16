@@ -1,29 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Password Reset</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        background-color: #f5f5f5;
-        padding: 20px;
-      }
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+			rel="stylesheet" />
+		<title>Password Reset</title>
+		<style>
+			body {
+				font-family: "Roboto", sans-serif;
+				/* font-family: Arial, sans-serif; */
+				background-color: #f5f5f5;
+				padding: 20px;
+			}
 
-      .container {
-        background-color: #ffffff;
-        padding: 40px;
-        max-width: 600px;
-        border-radius: 10px;
-        margin: 0 auto;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      link do potwierdzenia konta es {{ confirm_account_url }}
-    </div>
-  </body>
+			.container {
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+				background-color: #ffffff;
+				padding: 40px;
+				max-width: 600px;
+				border-radius: 10px;
+				margin: 0 auto;
+			}
+
+			.confirmIcon {
+				display: flex;
+				justify-content: center;
+				align-content: center;
+				height: 50px;
+			}
+
+			.confirmEmailTitle {
+				text-align: center;
+				font-size: 24px;
+				color: #7c67ff;
+				text-transform: uppercase;
+			}
+
+			.confirmEmailText {
+				margin-top: 35px;
+				font-size: 20px;
+				padding: 30px;
+				width: 500px;
+				background-color: #7c67ff;
+				color: #fff;
+				border-radius: 10px;
+				font-weight: 600;
+				/* letter-spacing: 2px; */
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="confirmIcon">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="52"
+					height="52"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="#7C67FF"
+					stroke-width="1"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					class="icon icon-tabler icons-tabler-outline icon-tabler-mail-check">
+					<path stroke="none" d="M0 0h24v24H0z" fill="none" />
+					<path
+						d="M11 19h-6a2 2 0 0 1 -2 -2v-10a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v6" />
+					<path d="M3 7l9 6l9 -6" />
+					<path d="M15 19l2 2l4 -4" />
+				</svg>
+			</div>
+
+			<h1 class="confirmEmailTitle">Potwierdź swój email</h1>
+
+			<div class="confirmEmailText">
+				<p>Dzień dobry,</p>
+				<br />
+				<p>
+					Dziękujemy za rejestrację na platformie Nauczajka! Jesteśmy bardzo
+					podekscytowani, że dołączyłeś/-aś do naszej społeczności edukacyjnej.
+				</p>
+				<br />
+				<p>
+					Aby dokończyć proces rejestracji i móc korzystać z wszystkich funkcji
+					Nauczajki, prosimy o potwierdzenie swojego adresu e-mail.
+				</p>
+				<br />
+				<p>Kliknij poniższy link, aby aktywować swoje konto:</p>
+				<br />
+				<p>{{ confirm_account_url }}</p>
+				<br />
+				<p>
+					Jeśli nie rejestrowałeś/-aś się na platformie Nauczajka, zignoruj tę
+					wiadomość.
+				</p>
+				<br />
+				<p>Dziękujemy i życzymy owocnej pracy na platformie Nauczajka!</p>
+				<br />
+				<p>Z poważaniem, Zespół Nauczajka</p>
+				<br />
+			</div>
+		</div>
+	</body>
 </html>
