@@ -26,7 +26,7 @@
 				background-color: #ffffff;
 				padding: 40px;
 				max-width: 600px;
-				border-radius: 10px;
+				border-radius: 12px;
 				margin: 0 auto;
 			}
 
@@ -51,9 +51,34 @@
 				width: 500px;
 				background-color: #7c67ff;
 				color: #fff;
-				border-radius: 10px;
+				border-radius: 12px;
 				font-weight: 600;
 				/* letter-spacing: 2px; */
+			}
+
+			.confirmEmailButton {
+				display: flex;
+				justify-content: center;
+				align-items: end;
+				flex-direction: column;
+				margin-top: 20px;
+			}
+
+			.EmailButton {
+				padding: 12px 16px;
+				font-size: 18px;
+				border: 1px solid #ddd;
+				border-radius: 12px;
+				color: #fff;
+				letter-spacing: 2px;
+				text-transform: uppercase;
+				font-weight: 600;
+				box-shadow: 0 0 4px #ddd;
+				background-color: #7c67ff;
+			}
+
+			.EmailButton:hover {
+				background-color: #6b56ee;
 			}
 		</style>
 	</head>
@@ -82,7 +107,7 @@
 			<h1 class="confirmEmailTitle">Potwierdź swój email</h1>
 
 			<div class="confirmEmailText">
-				<p>Dzień dobry,</p>
+				<p>Dzień dobry ,</p>
 				<br />
 				<p>
 					Dziękujemy za rejestrację na platformie Nauczajka! Jesteśmy bardzo
@@ -103,10 +128,23 @@
 					wiadomość.
 				</p>
 				<br />
+				<p>
+					Jeśli napotkasz jakiekolwiek problemy z przeglądarką, która nie
+					obsługuje klikalnych linków, skopiuj i wklej poniższy adres URL do
+					paska adresu przeglądarki:
+				</p>
+				<p>{{ confirm_account_url }}</p>
+				<br />
+
+				<br />
 				<p>Dziękujemy i życzymy owocnej pracy na platformie Nauczajka!</p>
 				<br />
 				<p>Z poważaniem, Zespół Nauczajka</p>
 				<br />
+
+				<div class="confirmEmailButton">
+					<button class="EmailButton">Potwierdź</button>
+				</div>
 			</div>
 		</div>
 	</body>
