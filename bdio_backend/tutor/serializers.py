@@ -102,7 +102,7 @@ class TutorSerializer(ModelSerializer):
 
     class Meta:
         model = Tutor 
-        fields = ('id', 'first_name', 'last_name', 'profile_image', 'description', 'price', 'avg_rating', 'skills',)
+        fields = ('id', 'first_name', 'last_name', 'profile_image', 'description', 'price', 'avg_rating', 'skills', 'online_sessions_available', 'in_person_sessions_available')
 
 
 class RatingsSerializer(ModelSerializer):
@@ -129,7 +129,7 @@ class TutorDetailSerializer(ModelSerializer):
     
     class Meta:
         model = Tutor
-        fields = ('first_name', 'last_name', 'profile_image', 'description', 'skills', 'avg_rating', 'price', 'tutor_ratings', 'tutor_schedule_items', )
+        fields = ('first_name', 'last_name', 'profile_image', 'description', 'skills', 'avg_rating', 'price', 'tutor_ratings', 'tutor_schedule_items', 'online_sessions_available', 'in_person_sessions_available' )
     
     
 class TutorMeScheduleItemsSerializer(ModelSerializer):
@@ -164,3 +164,14 @@ class TutorMeScheduleItemsSerializer(ModelSerializer):
         schedule_item = TutorScheduleItems.objects.create(tutor=tutor, **validated_data)
         schedule_item.clean()
         return schedule_item
+    
+    
+class TutorMethodSessionAvailabilitySerializer(ModelSerializer):
+    """
+    Serializer for the tutor method session availability object
+    """
+    
+    
+    class Meta:
+        model = Tutor
+        fields = ('online_sessions_available', 'in_person_sessions_available')

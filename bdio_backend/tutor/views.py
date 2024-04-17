@@ -25,6 +25,7 @@ from .serializers import (
     TutorSerializer,
     TutorDetailSerializer,
     TutorMeScheduleItemsSerializer,
+    TutorMethodSessionAvailabilitySerializer,
 )
 
 
@@ -229,3 +230,45 @@ class DeleteTutorMeScheduleItemView(APIView):
         schedule_item.delete()
         
         return Response({"Info": _("Schedule item deleted successfully.")}, status=status.HTTP_200_OK)
+    
+
+@extend_schema(tags=['Tutor method session availability'])
+class TutorMethodSessionAvailabilityView(APIView):
+    """
+    View and update tutor method session availability
+    """
+    permission_classes = (IsAuthenticated, IsTutor,)
+    serializer_class = TutorMethodSessionAvailabilitySerializer
+    
+    def get(self, request):
+        """
+        Get tutor description
+        """
+        serializer = self.serializer_class(request.user.tutor)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def patch(self, request):
+        """
+        Update tutor description
+        """
+        serializer = self.serializer_class(request.user.tutor, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+@extend_schema(tags=['Tutor Me'])
+class TutorMeView(APIView):
+    """
+    Get my tutor details
+    """
+    permission_classes = (IsAuthenticated, IsTutor,)
+    serializer_class = TutorDetailSerializer
+    
+    def get(self, request):
+        """
+        Get my tutor details
+        """
+        tutor = request.user.tutor
+        serializer = self.serializer_class(tutor)
+        return Response(serializer.data, status=status.HTTP_200_OK)
