@@ -33,7 +33,6 @@
 				margin: 0 auto;
 				height: 50px;
 				text-align: center;
-
 			}
 
 			.confirmEmailTitle {
@@ -94,6 +93,10 @@
 			a:hover {
 				color: #fff;
 			}
+
+			.whiteText {
+				color: #fff;
+			}
 		</style>
 	</head>
 	<body>
@@ -121,19 +124,21 @@
 			<h1 class="confirmEmailTitle">Potwierdź swój email</h1>
 
 			<div class="confirmEmailText">
-				<p>Dzień dobry ,</p>
+				<p class="whiteText">Dzień dobry ,</p>
 
-				<p>
+				<p class="whiteText">
 					Dziękujemy za rejestrację na platformie Nauczajka! Jesteśmy bardzo
 					podekscytowani, że dołączyłeś/-aś do naszej społeczności edukacyjnej.
 				</p>
 
-				<p>
+				<p class="whiteText">
 					Aby dokończyć proces rejestracji i móc korzystać z wszystkich funkcji
 					Nauczajki, prosimy o potwierdzenie swojego adresu e-mail.
 				</p>
 
-				<p>Kliknij poniższy link, aby aktywować swoje konto:</p>
+				<p class="whiteText">
+					Kliknij poniższy link, aby aktywować swoje konto:
+				</p>
 
 				<div class="confirmEmailButton">
 					<button class="EmailButton">
@@ -141,22 +146,24 @@
 					</button>
 				</div>
 
-				<p>
+				<p class="whiteText">
 					Jeśli nie rejestrowałeś/-aś się na platformie Nauczajka, zignoruj tę
 					wiadomość.
 				</p>
 
-				<p>
+				<p class="whiteText">
 					Jeśli napotkasz jakiekolwiek problemy z przeglądarką, która nie
 					obsługuje klikalnych linków, skopiuj i wklej poniższy adres URL do
 					paska adresu przeglądarki:
 				</p>
 
-				<p>{{ confirm_account_url }}</p>
+				<p class="whiteText">{{ confirm_account_url }}</p>
 
-				<p>Dziękujemy i życzymy owocnej pracy na platformie Nauczajka!</p>
+				<p class="whiteText">
+					Dziękujemy i życzymy owocnej pracy na platformie Nauczajka!
+				</p>
 
-				<p>Z poważaniem, Zespół Nauczajka</p>
+				<p class="whiteText">Z poważaniem, Zespół Nauczajka</p>
 			</div>
 		</div>
 	</body>
