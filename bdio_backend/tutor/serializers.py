@@ -164,3 +164,14 @@ class TutorMeScheduleItemsSerializer(ModelSerializer):
         schedule_item = TutorScheduleItems.objects.create(tutor=tutor, **validated_data)
         schedule_item.clean()
         return schedule_item
+    
+    
+class TutorMethodSessionAvailabilitySerializer(ModelSerializer):
+    """
+    Serializer for the tutor method session availability object
+    """
+    
+    
+    class Meta:
+        model = Tutor
+        fields = ('online_sessions_available', 'in_person_sessions_available')
