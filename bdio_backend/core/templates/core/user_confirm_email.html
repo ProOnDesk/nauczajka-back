@@ -21,7 +21,7 @@
 			.container {
 				display: block;
 				margin: 0 auto;
-				background-color: #ffffff;
+				background-color: #7c67ff;
 				padding: 40px;
 				max-width: 600px;
 				width: 100%;
@@ -30,31 +30,38 @@
 
 			.confirmIcon {
 				display: block;
+				width: 50px;
+				height: 50px;
 				margin: 0 auto;
 				height: 50px;
+
 				text-align: center;
+			}
+
+			.confirmImg {
+				width: 100%;
+				height: 100%;
 			}
 
 			.confirmEmailTitle {
 				text-align: center;
 				font-size: 24px;
-				color: #7c67ff;
+				color: #fff;
 				text-transform: uppercase;
 			}
 
 			p {
-				margin-bottom: 50px;
+				margin-bottom: 30px;
 			}
 			.confirmEmailText {
 				margin: 0 auto;
 				margin-top: 35px;
-				font-size: 20px;
+				font-size: 15px;
 				padding: 30px;
 				width: 500px;
-				background-color: #7c67ff;
-				color: #fff;
+				background-color: #fff;
+				color: #7c67ff;
 				border-radius: 12px;
-				font-weight: 600;
 			}
 
 			.confirmEmailButton {
@@ -75,60 +82,35 @@
 				font-weight: 600;
 				box-shadow: 0 0 4px #ddd;
 				background-color: #7c67ff;
-				transition: background-color 0.3s;
 			}
 
 			a {
 				padding: 12px 20px;
 				text-align: center;
 				text-decoration: none;
-				color: #ddd;
+				color: #fff;
 				transition: color 0.3s;
 			}
 
-			.EmailButton:hover {
-				background-color: #6b56ee;
-			}
-
-			a:hover {
-				color: #fff;
-			}
-
 			.whiteText {
-				color: #fff;
+				color: #333;
 			}
 		</style>
 	</head>
 	<body>
 		<div class="container">
 			<div class="confirmIcon">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="52"
-					height="52"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="#7C67FF"
-					stroke-width="1"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					class="icon icon-tabler icons-tabler-outline icon-tabler-mail-check">
-					<path stroke="none" d="M0 0h24v24H0z" fill="none" />
-					<path
-						d="M11 19h-6a2 2 0 0 1 -2 -2v-10a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v6" />
-					<path d="M3 7l9 6l9 -6" />
-					<path d="M15 19l2 2l4 -4" />
-				</svg>
+				<img
+					class="confirmImg"
+					src="https://cdn.discordapp.com/attachments/1158303410290962432/1230166059013898341/kox.png?ex=6632546b&is=661fdf6b&hm=bc9b0a871f74cf54b9419dfb9673941602b1fe68c504a66f6c4ad1d92239428c&"
+					alt="" />
 			</div>
 
 			<h1 class="confirmEmailTitle">Potwierdź swój email</h1>
 
 			<div class="confirmEmailText">
-				<p class="whiteText">Dzień dobry ,</p>
-
 				<p class="whiteText">
-					Dziękujemy za rejestrację na platformie Nauczajka! Jesteśmy bardzo
-					podekscytowani, że dołączyłeś/-aś do naszej społeczności edukacyjnej.
+					Dziękujemy za rejestrację na platformie Nauczajka!
 				</p>
 
 				<p class="whiteText">
@@ -147,23 +129,12 @@
 				</div>
 
 				<p class="whiteText">
-					Jeśli nie rejestrowałeś/-aś się na platformie Nauczajka, zignoruj tę
-					wiadomość.
-				</p>
-
-				<p class="whiteText">
 					Jeśli napotkasz jakiekolwiek problemy z przeglądarką, która nie
 					obsługuje klikalnych linków, skopiuj i wklej poniższy adres URL do
 					paska adresu przeglądarki:
 				</p>
 
 				<p class="whiteText">{{ confirm_account_url }}</p>
-
-				<p class="whiteText">
-					Dziękujemy i życzymy owocnej pracy na platformie Nauczajka!
-				</p>
-
-				<p class="whiteText">Z poważaniem, Zespół Nauczajka</p>
 			</div>
 		</div>
 	</body>
