@@ -80,6 +80,7 @@
 				letter-spacing: 3px;
 				text-transform: uppercase;
 				font-weight: 600;
+				color: #fff !important;
 				box-shadow: 0 0 4px #ddd;
 				background-color: #7c67ff;
 			}
@@ -88,8 +89,11 @@
 				padding: 12px 20px;
 				text-align: center;
 				text-decoration: none;
-				color: #fff !important;
 				transition: color 0.3s;
+			}
+
+			.whiteLink {
+				color: #fff;
 			}
 
 			.whiteText {
@@ -124,7 +128,7 @@
 
 				<div class="confirmEmailButton">
 					<button class="EmailButton">
-						<a href="{{ confirm_account_url }}">Potwierdź</a>
+						<a class="whiteLink" href="{{ confirm_account_url }}">Potwierdź</a>
 					</button>
 				</div>
 
