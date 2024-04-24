@@ -122,6 +122,7 @@ class TutorDetailSerializer(ModelSerializer):
     first_name = CharField(source='user.first_name') 
     last_name = CharField(source='user.last_name') 
     profile_image = CharField(source='user.profile_image.url')
+    user_id = CharField(source='user.id')
     
     tutor_schedule_items = TutorScheduleItemsSerializer(many=True)
     tutor_ratings = RatingsSerializer(many=True)
@@ -129,7 +130,7 @@ class TutorDetailSerializer(ModelSerializer):
     
     class Meta:
         model = Tutor
-        fields = ('first_name', 'last_name', 'profile_image', 'description', 'skills', 'avg_rating', 'price', 'tutor_ratings', 'tutor_schedule_items', 'online_sessions_available', 'in_person_sessions_available' )
+        fields = ('user_id', 'first_name', 'last_name', 'profile_image', 'description', 'skills', 'avg_rating', 'price', 'tutor_ratings', 'tutor_schedule_items', 'online_sessions_available', 'in_person_sessions_available' )
     
     
 class TutorMeScheduleItemsSerializer(ModelSerializer):
