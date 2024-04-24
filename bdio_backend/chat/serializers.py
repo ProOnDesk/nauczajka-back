@@ -2,6 +2,9 @@ from rest_framework import serializers
 from chat.models import Conversation, ConversationMessage
 from user.models import User
 from django.utils.translation import gettext as _
+from operator import itemgetter
+from typing import Optional
+
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -23,15 +26,24 @@ class ConversationSerializer(serializers.ModelSerializer):
     Serializer for the conversation object
     """
     users = UserSerializer(many=True, required=True)
-    
+    last_message = serializers.SerializerMethodField()
+
     
     class Meta:
         model = Conversation
         fields = '__all__'
         extra_kwargs = {
             'id': {'read_only': True},
+            'last_meesage': {'read_only': True},
+            'updated_at': {'read_only': True},
         }
-        
+    
+    def get_last_message(self, obj) -> Optional[dict]:
+        last_message = ConversationMessage.objects.filter(conversation=obj).order_by('-created_at').first()
+        if last_message:
+            return ConversationMessagesSerializer(last_message).data
+        return None
+      
     def create(self, validated_data):
         users_data = validated_data.pop('users')
         conversation = Conversation.objects.create(**validated_data)
@@ -56,7 +68,6 @@ class ConversationSerializer(serializers.ModelSerializer):
         return value
             
 
-
 class ConversationMessagesSerializer(serializers.ModelSerializer):
     """
     Serializer for the conversation message object
@@ -72,3 +83,4 @@ class ConversationMessagesSerializer(serializers.ModelSerializer):
             'username': {'read_only': True},
         }
         ordering = ['-created_at']
+    

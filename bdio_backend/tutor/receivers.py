@@ -1,4 +1,5 @@
 from .models import Tutor, TutorRatings
+from chat.models import ConversationMessage
 from django.db.models.signals import pre_save, post_save
 from django.db.models import Avg
 from django.dispatch import receiver
@@ -21,3 +22,9 @@ def update_tutor_avg_rating(sender, instance, **kwargs):
     avg_rating = TutorRatings.objects.filter(tutor=tutor).aggregate(Avg('rating'))['rating__avg']
     tutor.avg_rating = avg_rating if avg_rating else 0
     tutor.save()
+    
+@receiver(pre_save, sender=ConversationMessage)
+def update_conversation_updated_at(sender, instance, **kwargs):
+    instance.conversation.updated_at = instance.created_at  
+    instance.conversation.save()
+    print(f"Conversation updated at. {instance.conversation.updated_at}")
