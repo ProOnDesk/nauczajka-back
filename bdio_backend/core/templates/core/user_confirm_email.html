@@ -1,29 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Password Reset</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        background-color: #f5f5f5;
-        padding: 20px;
-      }
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+			rel="stylesheet" />
+		<title>Password Reset</title>
+		<style>
+			body {
+				font-family: "Roboto", sans-serif;
+				/* font-family: Arial, sans-serif; */
+				background-color: #f5f5f5;
+				padding: 20px;
+			}
 
-      .container {
-        background-color: #ffffff;
-        padding: 40px;
-        max-width: 600px;
-        border-radius: 10px;
-        margin: 0 auto;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      link do potwierdzenia konta es {{ confirm_account_url }}
-    </div>
-  </body>
+			.container {
+				display: block;
+				margin: 0 auto;
+				background-color: #7c67ff;
+				padding: 40px;
+				max-width: 600px;
+				width: 100%;
+				border-radius: 12px;
+			}
+
+			.confirmIcon {
+				display: block;
+				width: 50px;
+				height: 50px;
+				margin: 0 auto;
+				height: 50px;
+
+				text-align: center;
+			}
+
+			.confirmImg {
+				width: 100%;
+				height: 100%;
+			}
+
+			.confirmEmailTitle {
+				text-align: center;
+				font-size: 24px;
+				color: #fff;
+				text-transform: uppercase;
+			}
+
+			p {
+				margin-bottom: 30px;
+			}
+			.confirmEmailText {
+				margin: 0 auto;
+				margin-top: 35px;
+				font-size: 15px;
+				padding: 30px;
+				width: 500px;
+				background-color: #fff;
+				color: #7c67ff;
+				border-radius: 12px;
+			}
+
+			.confirmEmailButton {
+				display: block;
+				width: 100%;
+				margin-bottom: 50px;
+			}
+
+			.EmailButton {
+				display: block;
+				padding: 12px 16px;
+				margin: 0 auto;
+				font-size: 18px;
+				border: 1px solid #ddd;
+				border-radius: 12px;
+				letter-spacing: 3px;
+				text-transform: uppercase;
+				font-weight: 600;
+				color: #fff !important;
+				box-shadow: 0 0 4px #ddd;
+				background-color: #7c67ff;
+			}
+
+			a {
+				padding: 12px 20px;
+				text-align: center;
+				text-decoration: none;
+				transition: color 0.3s;
+			}
+
+			.whiteLink {
+				color: #fff !important;
+			}
+
+			.whiteText {
+				color: #333;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="confirmIcon">
+				<img
+					class="confirmImg"
+					src="https://cdn.discordapp.com/attachments/1158303410290962432/1230166059013898341/kox.png?ex=6632546b&is=661fdf6b&hm=bc9b0a871f74cf54b9419dfb9673941602b1fe68c504a66f6c4ad1d92239428c&"
+					alt="" />
+			</div>
+
+			<h1 class="confirmEmailTitle">Potwierdź swój email</h1>
+
+			<div class="confirmEmailText">
+				<p class="whiteText">
+					Dziękujemy za rejestrację na platformie Nauczajka!
+				</p>
+
+				<p class="whiteText">
+					Aby dokończyć proces rejestracji i móc korzystać z wszystkich funkcji
+					Nauczajki, prosimy o potwierdzenie swojego adresu e-mail.
+				</p>
+
+				<p class="whiteText">
+					Kliknij poniższy link, aby aktywować swoje konto:
+				</p>
+
+				<div class="confirmEmailButton">
+					<button class="EmailButton">
+						<a class="whiteLink" href="{{ confirm_account_url }}">Potwierdź</a>
+					</button>
+				</div>
+
+				<p class="whiteText">
+					Jeśli napotkasz jakiekolwiek problemy z przeglądarką, która nie
+					obsługuje klikalnych linków, skopiuj i wklej poniższy adres URL do
+					paska adresu przeglądarki:
+				</p>
+
+				<p class="whiteText">{{ confirm_account_url }}</p>
+			</div>
+		</div>
+	</body>
 </html>
