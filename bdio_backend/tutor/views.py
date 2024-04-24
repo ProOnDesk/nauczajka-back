@@ -15,7 +15,7 @@ from tutor.models import Skills, Tutor, TutorScheduleItems
 from drf_spectacular.utils import extend_schema
 from django_filters.rest_framework import DjangoFilterBackend
 
-from .filters import TutorFilter
+from tutor.filters import TutorFilter
 
 from .serializers import (
     TutorDescriptionSerializer,
