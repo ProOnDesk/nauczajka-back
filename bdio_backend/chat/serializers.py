@@ -11,13 +11,16 @@ class UserSerializer(serializers.ModelSerializer):
     """
     Serializer for the user object
     """
+    
+    
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name',)
+        fields = ('id', 'first_name', 'last_name', 'profile_image')
         extra_kwargs = {
             'id': {'read_only': False},
             'first_name': {'read_only': True},
-            'last_name': {'read_only': True}
+            'last_name': {'read_only': True},
+            'profile_image': {'read_only': True},
         }
 
 
@@ -47,6 +50,7 @@ class ConversationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         users_data = validated_data.pop('users')
         conversation = Conversation.objects.create(**validated_data)
+        
         for user_data in users_data:
             user = User.objects.get(id=user_data['id'])
             conversation.users.add(user)
@@ -73,6 +77,8 @@ class ConversationMessagesSerializer(serializers.ModelSerializer):
     Serializer for the conversation message object
     """
     created_by = UserSerializer()
+    
+    
     class Meta:
         model = ConversationMessage
         fields = ('id', 'conversation', 'body', 'created_at', 'created_by')
