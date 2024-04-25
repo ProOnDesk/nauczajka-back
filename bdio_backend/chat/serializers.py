@@ -46,7 +46,8 @@ class ConversationSerializer(serializers.ModelSerializer):
         if last_message:
             return ConversationMessagesSerializer(last_message).data
         return None
-      
+    
+        
     def create(self, validated_data):
         users_data = validated_data.pop('users')
         conversation = Conversation.objects.create(**validated_data)
@@ -70,7 +71,24 @@ class ConversationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(_('Rozmowa już istnieje.'))
         
         return value
-            
+    
+    def to_representation(self, instace):
+        """
+        Override the default to_representation method to insert the current user at the beginning of the users list
+        """
+        data = super().to_representation(instace)
+        users_list = data.pop('users')
+
+        new_users_list = []
+
+        for user in users_list:
+            if str(user['id']) == str(self.context['request'].user.id):
+                new_users_list.insert(0, user)
+            else:
+                new_users_list.append(user)
+
+        data['users'] = new_users_list
+        return data
 
 class ConversationMessagesSerializer(serializers.ModelSerializer):
     """
