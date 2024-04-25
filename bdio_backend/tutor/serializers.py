@@ -102,7 +102,7 @@ class TutorSerializer(ModelSerializer):
 
     class Meta:
         model = Tutor 
-        fields = ('id', 'first_name', 'last_name', 'profile_image', 'description', 'price', 'avg_rating', 'skills', 'online_sessions_available', 'in_person_sessions_available', 'tutoring_location')
+        fields = ('id', 'first_name', 'last_name', 'profile_image', 'description', 'price', 'avg_rating', 'skills', 'online_sessions_available', 'in_person_sessions_available', 'tutoring_location', 'individual_sessions_available', 'group_sessions_available')
 
 
 class RatingsSerializer(ModelSerializer):
@@ -113,7 +113,7 @@ class RatingsSerializer(ModelSerializer):
     class Meta:
         model = TutorRatings
         fields = ('rating', 'review', 'created_at', 'student_first_name', 'student_last_name')
-        
+    
          
 class TutorDetailSerializer(ModelSerializer):
     """
@@ -121,16 +121,23 @@ class TutorDetailSerializer(ModelSerializer):
     """
     first_name = CharField(source='user.first_name') 
     last_name = CharField(source='user.last_name') 
-    profile_image = CharField(source='user.profile_image.url')
-    user_id = CharField(source='user.id')
+    profile_image = CharField(source='user.profile_image.url', read_only=True)
+    user_id = CharField(source='user.id', read_only=True)
     
-    tutor_schedule_items = TutorScheduleItemsSerializer(many=True)
-    tutor_ratings = RatingsSerializer(many=True)
+    tutor_schedule_items = TutorScheduleItemsSerializer(many=True, read_only=True)
+    tutor_ratings = RatingsSerializer(many=True, read_only=True)
 
     
     class Meta:
         model = Tutor
-        fields = ('user_id', 'first_name', 'last_name', 'profile_image', 'description', 'skills', 'avg_rating', 'price', 'tutor_ratings', 'tutor_schedule_items', 'online_sessions_available', 'in_person_sessions_available', 'tutoring_location' )
+        fields = ('user_id', 'first_name', 'last_name', 'profile_image', 'description', 'skills', 'avg_rating', 'price', 'tutor_ratings', 'tutor_schedule_items', 'online_sessions_available', 'in_person_sessions_available', 'tutoring_location', 'online_sessions_available', 'in_person_sessions_available', 'individual_sessions_available', 'group_sessions_available')
+        extra_kwargs = {
+            'user_id': {'read_only': True},
+            'profile_image': {'read_only': True},
+            'avg_rating': {'read_only': True},
+            'tutors_ratings': {'read_only': True},
+            'tutor_schedule_items': {'read_only': True},
+        }
     
     
 class TutorMeScheduleItemsSerializer(ModelSerializer):
@@ -199,10 +206,13 @@ class TutorLocationSerializer(ModelSerializer):
         
         return data
 
-    def update(self, instance, validated_data):
-        """
-        Update the tutoring location
-        """
-        instance.tutoring_location = validated_data.get('tutoring_location', instance.tutoring_location)
-        instance.save()
-        return instance
+    
+class TutorIndividualGroupSessionsSerializer(ModelSerializer):
+    """
+    Serializer for the tutor individual group sessions object
+    """
+    
+    
+    class Meta:
+        model = Tutor
+        fields = ('individual_sessions_available', 'group_sessions_available')

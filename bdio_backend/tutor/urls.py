@@ -11,6 +11,7 @@ from .views import (
     TutorMethodSessionAvailabilityView,
     TutorMeView,
     TutorLocationView,
+    TutorIndividualGroupView,
 )
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
@@ -32,5 +33,6 @@ urlpatterns = [
     path('method_session_availability/me/', TutorMethodSessionAvailabilityView.as_view(), name='method-session-availability-me'),
     path('me/', TutorMeView.as_view(), name='me'),
     path('location/me/', TutorLocationView.as_view(), name='location-me'),
+    path('individual_group/me/', TutorIndividualGroupView.as_view(), name='individual-group-me'),
     path('', include(router.urls)),
 ]
