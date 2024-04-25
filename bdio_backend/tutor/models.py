@@ -14,6 +14,8 @@ class Tutor(models.Model):
     online_sessions_available = models.BooleanField(default=False)
     in_person_sessions_available = models.BooleanField(default=False)
     tutoring_location = models.CharField(max_length=100, blank=True, null=True)
+    individual_sessions_available = models.BooleanField(default=False)
+    group_sessions_available = models.BooleanField(default=False)
 
     avg_rating = models.DecimalField(max_digits=2, decimal_places=1, default=0.0)
 

@@ -27,6 +27,7 @@ from .serializers import (
     TutorMeScheduleItemsSerializer,
     TutorMethodSessionAvailabilitySerializer,
     TutorLocationSerializer,
+    TutorIndividualGroupSessionsSerializer,
 )
 
 
@@ -292,6 +293,32 @@ class TutorLocationView(APIView):
     def patch(self, request):
         """
         Update tutor location
+        """
+        serializer = self.serializer_class(request.user.tutor, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@extend_schema(tags=['Tutor Individual Group'])
+class TutorIndividualGroupView(APIView):
+    """
+    View and update tutor individual and group sessions
+    """
+    permission_classes = (IsAuthenticated, IsTutor,)
+    serializer_class = TutorIndividualGroupSessionsSerializer
+    
+    def get(self, request):
+        """
+        Get tutor individual and group sessions
+        """
+        tutor = request.user.tutor
+        return Response({"individual_sessions": tutor.individual_sessions_available, "group_sessions": tutor.group_sessions_available}, status=status.HTTP_200_OK)
+    
+    def patch(self, request):
+        """
+        Update tutor individual and group sessions
         """
         serializer = self.serializer_class(request.user.tutor, data=request.data)
         if serializer.is_valid():

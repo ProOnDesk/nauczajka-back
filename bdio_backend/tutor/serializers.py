@@ -102,7 +102,7 @@ class TutorSerializer(ModelSerializer):
 
     class Meta:
         model = Tutor 
-        fields = ('id', 'first_name', 'last_name', 'profile_image', 'description', 'price', 'avg_rating', 'skills', 'online_sessions_available', 'in_person_sessions_available', 'tutoring_location')
+        fields = ('id', 'first_name', 'last_name', 'profile_image', 'description', 'price', 'avg_rating', 'skills', 'online_sessions_available', 'in_person_sessions_available', 'tutoring_location', 'online_sessions_available', 'in_person_sessions_available')
 
 
 class RatingsSerializer(ModelSerializer):
@@ -130,7 +130,7 @@ class TutorDetailSerializer(ModelSerializer):
     
     class Meta:
         model = Tutor
-        fields = ('user_id', 'first_name', 'last_name', 'profile_image', 'description', 'skills', 'avg_rating', 'price', 'tutor_ratings', 'tutor_schedule_items', 'online_sessions_available', 'in_person_sessions_available', 'tutoring_location' )
+        fields = ('user_id', 'first_name', 'last_name', 'profile_image', 'description', 'skills', 'avg_rating', 'price', 'tutor_ratings', 'tutor_schedule_items', 'online_sessions_available', 'in_person_sessions_available', 'tutoring_location', 'online_sessions_available', 'in_person_sessions_available')
     
     
 class TutorMeScheduleItemsSerializer(ModelSerializer):
@@ -199,10 +199,13 @@ class TutorLocationSerializer(ModelSerializer):
         
         return data
 
-    def update(self, instance, validated_data):
-        """
-        Update the tutoring location
-        """
-        instance.tutoring_location = validated_data.get('tutoring_location', instance.tutoring_location)
-        instance.save()
-        return instance
+    
+class TutorIndividualGroupSessionsSerializer(ModelSerializer):
+    """
+    Serializer for the tutor individual group sessions object
+    """
+    
+    
+    class Meta:
+        model = Tutor
+        fields = ('individual_sessions_available', 'group_sessions_available')
