@@ -13,7 +13,7 @@ class Tutor(models.Model):
     price = models.IntegerField(default=0)
     online_sessions_available = models.BooleanField(default=False)
     in_person_sessions_available = models.BooleanField(default=False)
-    tutoring_location = models.CharField(max_length=100, blank=True, null=True)
+    tutoring_location = models.CharField(max_length=100, blank=True, default='')
     individual_sessions_available = models.BooleanField(default=False)
     group_sessions_available = models.BooleanField(default=False)
 
