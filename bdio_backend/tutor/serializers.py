@@ -102,7 +102,7 @@ class TutorSerializer(ModelSerializer):
 
     class Meta:
         model = Tutor 
-        fields = ('id', 'first_name', 'last_name', 'profile_image', 'description', 'price', 'avg_rating', 'skills', 'online_sessions_available', 'in_person_sessions_available')
+        fields = ('id', 'first_name', 'last_name', 'profile_image', 'description', 'price', 'avg_rating', 'skills', 'online_sessions_available', 'in_person_sessions_available', 'tutoring_location')
 
 
 class RatingsSerializer(ModelSerializer):
@@ -130,7 +130,7 @@ class TutorDetailSerializer(ModelSerializer):
     
     class Meta:
         model = Tutor
-        fields = ('user_id', 'first_name', 'last_name', 'profile_image', 'description', 'skills', 'avg_rating', 'price', 'tutor_ratings', 'tutor_schedule_items', 'online_sessions_available', 'in_person_sessions_available' )
+        fields = ('user_id', 'first_name', 'last_name', 'profile_image', 'description', 'skills', 'avg_rating', 'price', 'tutor_ratings', 'tutor_schedule_items', 'online_sessions_available', 'in_person_sessions_available', 'tutoring_location' )
     
     
 class TutorMeScheduleItemsSerializer(ModelSerializer):
@@ -176,3 +176,33 @@ class TutorMethodSessionAvailabilitySerializer(ModelSerializer):
     class Meta:
         model = Tutor
         fields = ('online_sessions_available', 'in_person_sessions_available')
+        
+class TutorLocationSerializer(ModelSerializer):
+    """
+    Serializer for the tutor location object
+    """
+    
+    
+    class Meta:
+        model = Tutor
+        fields = ('tutoring_location',)
+
+    def validate(self, data):
+        """
+        Validate the tutoring location
+        """
+        if not data['tutoring_location']:
+            raise ValidationError(_("Tutoring location cannot be empty."))
+        
+        if len(data['tutoring_location']) > 50:
+            raise ValidationError(_("Tutoring location cannot be longer than 50 characters."))
+        
+        return data
+
+    def update(self, instance, validated_data):
+        """
+        Update the tutoring location
+        """
+        instance.tutoring_location = validated_data.get('tutoring_location', instance.tutoring_location)
+        instance.save()
+        return instance
