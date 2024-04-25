@@ -26,6 +26,7 @@ from .serializers import (
     TutorDetailSerializer,
     TutorMeScheduleItemsSerializer,
     TutorMethodSessionAvailabilitySerializer,
+    TutorLocationSerializer,
 )
 
 
@@ -272,3 +273,28 @@ class TutorMeView(APIView):
         tutor = request.user.tutor
         serializer = self.serializer_class(tutor)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+@extend_schema(tags=['Tutor location availability'])
+class TutorLocationView(APIView):
+    """
+    View and update tutor location
+    """
+    permission_classes = (IsAuthenticated, IsTutor,)
+    serializer_class = TutorLocationSerializer
+    
+    def get(self, request):
+        """
+        Get tutor location
+        """
+        serializer = self.serializer_class(request.user.tutor)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def patch(self, request):
+        """
+        Update tutor location
+        """
+        serializer = self.serializer_class(request.user.tutor, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
