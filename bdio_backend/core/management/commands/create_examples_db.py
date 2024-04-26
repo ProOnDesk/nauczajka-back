@@ -8,6 +8,8 @@ from django.utils.timezone import now
 from datetime import timedelta
 from django.core.exceptions import ValidationError
 from django.conf import settings
+import os
+from dotenv import load_dotenv
 
 
 class Command(BaseCommand):
@@ -23,8 +25,12 @@ class Command(BaseCommand):
             no_schedule = kwargs['no_schedule']
 
             # Create admin user
-            if not User.objects.filter(email="admin@admin.pl").exists():
+            if not User.objects.filter(email="admin@admin.pl").exists() and settings.DEBUG == True:
                 User.objects.create_superuser(email="admin@admin.pl", password="admin")
+            elif settings.DEBUG == False:
+                load_dotenv()
+                User.objects.create_superuser(email=os.environ.get('ADMIN_EMAIL'), password=os.environ.get('ADMIN_PASSWORD'))
+            
 
             fake = Faker('pl_PL')
 
@@ -55,13 +61,29 @@ class Command(BaseCommand):
                 last_name = fake.last_name()
                 password = 'password123'  # For simplicity, use a constant password
                 is_tutor = random.choice([True, False])
-
+                price = random.randint(20, 200)
+                online_sessions_available = random.choice([True, False])
+                in_person_sessions_available = random.choice([True, False])
+                tutoring_location = fake.city()
+                individual_sessions_available = random.choice([True, False])
+                group_sessions_available = random.choice([True, False])
+                
                 if is_tutor:
                     email = f"{to_email_str}{i}@stud.prz.edu.pl"
                 else:
                     email = fake.email()
 
-                user_obj = User.objects.create_user(email=email, password=password, first_name=first_name, last_name=last_name, is_confirmed=True, is_tutor=is_tutor)
+                user_obj = User.objects.create_user(email=email, password=password,
+                                                    first_name=first_name,
+                                                    last_name=last_name,
+                                                    is_confirmed=True,
+                                                    is_tutor=is_tutor, 
+                                                    price=price,
+                                                    online_sessions_available=online_sessions_available,
+                                                    in_person_sessions_available=in_person_sessions_available,
+                                                    tutoring_location=tutoring_location,
+                                                    individual_sessions_available=individual_sessions_available,
+                                                    group_sessions_available=group_sessions_available)
 
                 if user_obj.is_tutor:
                     user_obj.tutor.description = fake.text()
