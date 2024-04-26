@@ -13,4 +13,4 @@ daphne>=4.1.0, <4.2
 channels-redis>=4.2.0, <4.3
 django-extensions>=3.2.3, <3.3
 python-dotenv>=1.0.1, <1.1
-gunicorn>=21.2.2, <21.3
+gunicorn>=21.2.0, <21.3
