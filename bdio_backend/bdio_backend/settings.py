@@ -17,16 +17,12 @@ from datetime import timedelta
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-#_z!'
+DEBUG = bool(os.environ.get('DEBUG', False))
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS').split(' ')
 
 
 # Application definition
@@ -182,7 +178,7 @@ SPECTACULAR_SETTINGS = {
 }
 # JWT settings
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": False,
@@ -221,10 +217,20 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
 
-FRONTED_URL = 'http://localhost:5173'
-BACKEND_URL = 'http://localhost:8000'
+if DEBUG:
+    FRONTED_URL = 'http://localhost:5173'
+    BACKEND_URL = 'http://localhost:8000'
+else:
+    FRONTED_URL = os.environ.get('FRONTEND_URL')
+    BACKEND_URL = os.environ.get('BACKEND_URL')
 
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS settings
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True
+else:
+    CORS_ALLOWED_ORIGINS = [
+        FRONTED_URL,
+    ]
 
 AUTH_USER_MODEL = 'user.User'
 
