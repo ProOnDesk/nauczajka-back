@@ -27,6 +27,8 @@ services:
       - "80:80"
     depends_on:
       - bdio-app
+    env_file:
+      - ./.env
 
   daphne:
     build:
@@ -35,6 +37,8 @@ services:
       daphne --bind 0.0.0.0 -p 8002 bdio_backend.asgi:application
     ports:
       - "8002:8002"
+    env_file:
+      - ./.env
 
   bdio-db:
     image: postgres:16-alpine
