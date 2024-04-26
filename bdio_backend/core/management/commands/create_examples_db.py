@@ -27,7 +27,7 @@ class Command(BaseCommand):
             # Create admin user
             if not User.objects.filter(email="admin@admin.pl").exists() and settings.DEBUG == True:
                 User.objects.create_superuser(email="admin@admin.pl", password="admin")
-            elif settings.DEBUG == False:
+            elif settings.DEBUG == False and not User.objects.filter(email=os.environ.get('ADMIN_EMAIL')).exists():
                 load_dotenv()
                 User.objects.create_superuser(email=os.environ.get('ADMIN_EMAIL'), password=os.environ.get('ADMIN_PASSWORD'))
             
@@ -61,12 +61,6 @@ class Command(BaseCommand):
                 last_name = fake.last_name()
                 password = 'password123'  # For simplicity, use a constant password
                 is_tutor = random.choice([True, False])
-                price = random.randint(20, 200)
-                online_sessions_available = random.choice([True, False])
-                in_person_sessions_available = random.choice([True, False])
-                tutoring_location = fake.city()
-                individual_sessions_available = random.choice([True, False])
-                group_sessions_available = random.choice([True, False])
                 
                 if is_tutor:
                     email = f"{to_email_str}{i}@stud.prz.edu.pl"
@@ -78,20 +72,27 @@ class Command(BaseCommand):
                                                     last_name=last_name,
                                                     is_confirmed=True,
                                                     is_tutor=is_tutor, 
-                                                    price=price,
-                                                    online_sessions_available=online_sessions_available,
-                                                    in_person_sessions_available=in_person_sessions_available,
-                                                    tutoring_location=tutoring_location,
-                                                    individual_sessions_available=individual_sessions_available,
-                                                    group_sessions_available=group_sessions_available)
+                                                    )
 
                 if user_obj.is_tutor:
                     user_obj.tutor.description = fake.text()
+                    price = random.randint(20, 200)
+                    online_sessions_available = random.choice([True, False])
+                    in_person_sessions_available = random.choice([True, False])
+                    tutoring_location = fake.city()
+                    individual_sessions_available = random.choice([True, False])
+                    group_sessions_available = random.choice([True, False])
 
                     random_skills = random.sample(skills_objs, random.randint(1, 4))
                     user_obj.tutor.skills.set(random_skills)
                     tutor = Tutor.objects.get(user=user_obj)
                     tutor.description = fake.text()
+                    tutor.price=price
+                    tutor.online_sessions_available=online_sessions_available
+                    tutor.in_person_sessions_available=in_person_sessions_available
+                    tutor.tutoring_location=tutoring_location
+                    tutor.individual_sessions_available=individual_sessions_available
+                    tutor.group_sessions_available=group_sessions_available
                     tutor.save()
                 user_obj.save()
 
@@ -99,7 +100,13 @@ class Command(BaseCommand):
             for user in User.objects.filter(is_tutor=False):
                 for tutor in random.sample(list(User.objects.filter(is_tutor=True)), int(User.objects.filter(is_tutor=False).count() / 5)):
                     if not TutorRatings.objects.filter(tutor=tutor.tutor, student=user).exists():
-                        tutor = TutorRatings.objects.create(tutor=tutor.tutor, student=user, rating=random.randint(3, 5), review=fake.text())
+
+                        
+                        tutor = TutorRatings.objects.create(tutor=tutor.tutor,
+                                                            student=user,
+                                                            rating=random.randint(2, 5),
+                                                            review=fake.text(),
+                                                            )
                         tutor.save()
 
             # Creating tutor schedules
