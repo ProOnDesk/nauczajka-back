@@ -23,6 +23,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
+      - "8000:8000"
     depends_on:
       - bdio-app
     env_file:
