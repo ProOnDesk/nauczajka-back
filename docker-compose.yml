@@ -4,15 +4,11 @@ services:
   bdio-app:
     build:
       context: .
-    ports:
-      - "8000:8000"
     volumes:
       - ./bdio_backend:/bdio_backend
       - dev-static-data:/vol/web
     command: >
       sh -c "python manage.py wait_for_db && python manage.py makemigrations && python manage.py migrate && python manage.py move_media && gunicorn bdio_backend.wsgi:application --bind 0.0.0.0:8000"
-    expose:
-      - "8000"
     depends_on:
       - bdio-db
       - redis
@@ -23,22 +19,37 @@ services:
   nginx:
     build:
       context: ./nginx
+    restart: always
     ports:
-      - "1337:80"
+      - "80:80"
+      - "443:443"
+      - "8002:8002"
     depends_on:
       - bdio-app
     env_file:
       - ./.env
     volumes:
       - dev-static-data:/vol/web
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - /certbot/conf:/etc/letsencrypt
+      - /certbot/www:/var/www/certbot
+    command: >
+      certonly --webroot -w /var/www/certbot --force-renewal --email nauczajka.info@gmail.com -d ${CERTBOT_DOMAIN} --agree-tos
+    env_file:
+      - ./.env
 
   daphne:
     build:
       context: .
     command: >
-      daphne --bind 0.0.0.0 -p 8002 bdio_backend.asgi:application
+      daphne --bind 0.0.0.0 -p 8003 bdio_backend.asgi:application
     ports:
-      - "8002:8002"
+      - "8003:8003"
     env_file:
       - ./.env
 
