@@ -1,14 +1,15 @@
 import json
-
+from django.utils import timezone
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
-
-from .models import Conversation, ConversationMessage
-
+from .models import ConversationMessage
+from user.models import User
+from django.conf import settings
+from rest_framework.serializers import DateTimeField
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.conversation_id = self.scope['url_route']['kwargs']['conversation_id']
+        self.conversation_id = str(self.scope['url_route']['kwargs']['conversation_id'])
         self.conversation_group_name = f'chat_{self.conversation_id}'
 
         # Join conversation group
@@ -26,46 +27,52 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
         
-        # Recieve message from web sockets
     async def receive(self, text_data):
         data = json.loads(text_data)
 
-        username = data['data']['username']
         body = data['data']['body']
         created_by = data['data']['created_by']
 
-        message = await self.save_message(self.conversation_id, body, username)
-
+        message = await self.save_message(self.conversation_id, body, created_by)
         
+        created_at_formatted = message.created_at.astimezone(timezone.get_current_timezone()).strftime('%Y-%m-%dT%H:%M:%S.%f%z')
+
+        user = await sync_to_async(User.objects.get)(id=created_by)
         await self.channel_layer.group_send(
             self.conversation_group_name,
             {
                 'type': 'chat_message',
+                'id': str(message.id),
+                'conversation': self.conversation_id,
                 'body': body,
-                'username': username,
-                'created_by': created_by,
-                'message_id': self.last_message_id
+                'created_at': created_at_formatted,           
+                'created_by': {
+                    'id': str(user.id),
+                    'first_name': user.first_name,
+                    'last_name': user.last_name,
+                    'profile_image': f"{settings.BACKEND_URL}{user.profile_image.url}",
+                }
             }
         )
 
-    
-    # Sending messages
     async def chat_message(self, event):
+        id = event['id']
+        conversation = event['conversation']
         body = event['body']
+        created_at = event['created_at']
         created_by = event['created_by']
-        username = event['username']
 
         await self.send(text_data=json.dumps({
+            'id': str(id),
+            'conversation': conversation,
             'body': body,
-            'username': username,
+            'created_at': created_at,
             'created_by': created_by,
-            'message_id': self.last_message_id,
         }))
 
     @sync_to_async
-    def save_message(self, conversation_id, body, username):
+    def save_message(self, conversation_id, body, created_by):
         user = self.scope['user']
-
-        conversation = ConversationMessage.objects.create(conversation_id=conversation_id, body=body, created_by=user, username=username)
-        self.last_message_id = str(conversation.id)
- 
+        message = ConversationMessage.objects.create(conversation_id=conversation_id, body=body, created_by=user)
+        self.last_message = message
+        return message
