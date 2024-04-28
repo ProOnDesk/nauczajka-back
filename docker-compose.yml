@@ -32,6 +32,9 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
+    depends_on:
+      - daphne
+      - bdio-app
 
   certbot:
     image: certbot/certbot
@@ -40,18 +43,18 @@ services:
       - ./certbot/www:/var/www/certbot
     env_file:
       - ./.env
-    command: certonly --webroot -w /var/www/certbot --keep-until-expiring --email $EMAIL -d $DOMAIN --agree-tos
+    command: >
+      certonly --webroot -w /var/www/certbot --force-renewal --email $EMAIL -d nauczajka.online -d www.nauczajka.online
 
   daphne:
     build:
       context: .
     command: >
-      daphne --bind 0.0.0.0 -p 8002 bdio_backend.asgi:application
+      daphne --bind 0.0.0.0 -p 8001 bdio_backend.asgi:application
     ports:
-      - "8002:8002"
+      - "8001:8001"
     env_file:
       - ./.env
-
   bdio-db:
     image: postgres:16-alpine
     volumes:
