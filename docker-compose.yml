@@ -25,14 +25,13 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "8002:8002"
     env_file:
       - ./.env
     volumes:
       - dev-static-data:/vol/web
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./cerbot/conf:/etc/letsencrypt
-      - ./cerbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
 
   certbot:
     image: certbot/certbot
