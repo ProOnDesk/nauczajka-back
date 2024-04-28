@@ -38,14 +38,11 @@ services:
 
   certbot:
     image: certbot/certbot
+    container_name: certbot
     volumes:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
-    env_file:
-      - ./.env
-    command: >
-      certonly --webroot -w /var/www/certbot --force-renewal --email $EMAIL -d nauczajka.online -d www.nauczajka.online
-
+    command: certonly --webroot -w /var/www/certbot --force-renewal --email nauczajka.info@gmail.com --agree-tos
   daphne:
     build:
       context: .
