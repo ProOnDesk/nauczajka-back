@@ -36,11 +36,11 @@ services:
   certbot:
     image: certbot/certbot
     volumes:
-      - ./cerbot/conf:/etc/letsencrypt
-      - ./cerbot/www:/var/www/certbot
-    command: certonly --webroot -w /var/www/cerbot --keep-until-expiring --email $EMAIL -d $DOMAIN --agree-tos
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
     env_file:
       - ./.env
+    command: certonly --webroot -w /var/www/certbot --keep-until-expiring --email $EMAIL -d $DOMAIN --agree-tos
 
   daphne:
     build:
