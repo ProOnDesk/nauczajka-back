@@ -24,4 +24,3 @@ class ConversationMessage(models.Model):
     body = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='messages')
-    username = models.CharField(max_length=255, blank=True)
