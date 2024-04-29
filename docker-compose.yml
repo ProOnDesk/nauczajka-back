@@ -19,6 +19,19 @@ services:
       - daphne
     env_file:
       - ./.env
+  nginx:
+    image: nginx:1.21
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./bdio_backend:/bdio_backend
+      - ./nginx:/etc/nginx/conf.d
+      - dev-static-data:/vol/web
+    depends_on:
+      - bdio-app
+    env_file:
+      - ./.env
 
   daphne:
     build:
