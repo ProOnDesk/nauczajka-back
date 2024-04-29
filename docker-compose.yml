@@ -20,16 +20,6 @@ services:
     env_file:
       - ./.env
 
-  nginx:
-    image: nginx:latest
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - dev-static-data:/vol/web
-    depends_on:
-      - bdio-app
-
   daphne:
     build:
       context: .
@@ -56,3 +46,4 @@ services:
 volumes:
   postgres_data:
   dev-static-data:
+    driver: local
