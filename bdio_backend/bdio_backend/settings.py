@@ -23,6 +23,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 DEBUG = bool(int(os.environ.get('DJANGO_DEBUG', 0)))
+if DEBUG:
+    FRONTED_URL = 'http://localhost:5173'
+    BACKEND_URL = 'http://localhost:8000'
+else:
+    FRONTED_URL = os.environ.get('FRONTEND_URL', 'http://localhost:5173')
+    BACKEND_URL = os.environ.get('BACKEND_URL', 'http://localhost:8000')
+print(BACKEND_URL)
 print(DEBUG)
 
 
@@ -221,13 +228,7 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
 
-if DEBUG:
-    FRONTED_URL = 'http://localhost:5173'
-    BACKEND_URL = 'http://localhost:8000'
-else:
-    FRONTED_URL = os.environ.get('FRONTEND_URL', 'http://localhost:5173')
-    BACKEND_URL = os.environ.get('BACKEND_URL', 'http://localhost:8000')
-print(BACKEND_URL)
+
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = True
 
