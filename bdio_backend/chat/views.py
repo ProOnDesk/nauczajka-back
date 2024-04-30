@@ -82,5 +82,8 @@ class ConversationRetrieveAPIView(generics.RetrieveAPIView):
     
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
+        if not instance:
+            return Response({'detail': _('Brak konwersacji')}, status=status.HTTP_404_NOT_FOUND)
+        
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
