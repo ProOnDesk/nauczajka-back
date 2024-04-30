@@ -11,6 +11,10 @@ class UserSerializer(serializers.ModelSerializer):
     """
     Serializer for the user object
     """
+    def get_profile_image(self, obj):
+        if obj.profile_image:
+            return obj.profile_image.url
+        return None
     
     
     class Meta:
@@ -22,6 +26,8 @@ class UserSerializer(serializers.ModelSerializer):
             'last_name': {'read_only': True},
             'profile_image': {'read_only': True},
         }
+        
+
 
 
 class ConversationSerializer(serializers.ModelSerializer):
