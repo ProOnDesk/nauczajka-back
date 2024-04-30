@@ -102,7 +102,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         :return:
         """
         
-        reset_password_url = f"{settings.FRONTED_URL}/account/reset-password/?reset_token={reset_password_token.key}"
+        reset_password_url = f"{settings.FRONTEND_URL}/account/reset-password/?reset_token={reset_password_token.key}"
         
         # send an e-mail to the user
         context = {

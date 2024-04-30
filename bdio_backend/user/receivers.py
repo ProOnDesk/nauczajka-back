@@ -20,7 +20,7 @@ def email_token_confirmation_created(sender, instance, created, **kwargs):
         token = generate_confirmation_token(user=instance)
         
         # Construct the confirmation URL
-        confirm_account_url = f"{settings.FRONTED_URL}/account/confirm-email/?token={token.token}"
+        confirm_account_url = f"{settings.FRONTEND_URL}/account/confirm-email/?token={token.token}"
         
         # Construct email content
         context = {
