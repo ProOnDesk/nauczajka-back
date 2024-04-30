@@ -1,6 +1,6 @@
 from .models import User, TokenEmailConfirmation
 from tutor.models import TutorRatings
-from rest_framework.serializers import ModelSerializer, ValidationError, CharField
+from rest_framework.serializers import ModelSerializer, ValidationError, CharField, SerializerMethodField
 from django.utils.translation import gettext as _
 
 
@@ -8,6 +8,14 @@ class UserSerializer(ModelSerializer):
     """
     Serializer for the user object
     """
+    profile_image = SerializerMethodField()
+    
+    def get_profile_image(self, obj):
+        if obj.profile_image:
+            return obj.profile_image.url
+        return None
+    
+    
     class Meta:
         model = User
         fields = ('email', 'first_name', 'last_name', 'profile_image', 'created_at')
@@ -47,10 +55,14 @@ class UserUpdateSerializer(ModelSerializer):
     """
     Serializer for updating user profile
     """
-    def get_image_profile(self, obj):
+    
+    profile_image = SerializerMethodField()
+    
+    def get_profile_image(self, obj):
         if obj.profile_image:
             return obj.profile_image.url
         return None
+
     
     class Meta:
         model = User

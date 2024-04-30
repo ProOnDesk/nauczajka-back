@@ -24,7 +24,7 @@ class ConversationCreateAPIView(APIView):
         user_id = request.user.id
         data = request.data
         data['users'].append({'id': user_id})
-        serializer = self.serializer_class(data=data)
+        serializer = self.serializer_class(data=data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
