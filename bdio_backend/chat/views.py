@@ -12,6 +12,7 @@ from chat.filters import ConversationMessageFilter
 from rest_framework import generics
 from django.utils.translation import gettext as _
 
+
 @extend_schema(tags=['Chat'])
 class ConversationCreateAPIView(APIView):
     """
