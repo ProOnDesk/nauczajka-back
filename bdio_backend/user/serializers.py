@@ -55,13 +55,14 @@ class UserUpdateSerializer(ModelSerializer):
     """
     Serializer for updating user profile
     """
+    
     profile_image = SerializerMethodField()
     
     def get_profile_image(self, obj):
         if obj.profile_image:
             return obj.profile_image.url
         return None
-    
+
     
     class Meta:
         model = User

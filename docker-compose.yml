@@ -10,13 +10,38 @@ services:
       - ./bdio_backend:/bdio_backend
       - dev-static-data:/vol/web
     command: >
-      sh -c "python manage.py wait_for_db && python manage.py makemigrations && python manage.py migrate && python manage.py move_media && python manage.py runserver 0.0.0.0:8000"
+      sh -c "python manage.py wait_for_db && python manage.py makemigrations && python manage.py migrate && python manage.py move_media && gunicorn bdio_backend.wsgi:application --bind 0.0.0.0:8000"
+    expose:
+      - "8000"
     depends_on:
       - bdio-db
       - redis
+      - daphne
+    env_file:
+      - ./.env
+  nginx:
+    image: nginx:1.21
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./bdio_backend:/bdio_backend
+      - ./nginx:/etc/nginx/conf.d
+      - dev-static-data:/vol/web
+    depends_on:
+      - bdio-app
     env_file:
       - ./.env
 
+  daphne:
+    build:
+      context: .
+    command: >
+      daphne --bind 0.0.0.0 -p 8001 bdio_backend.asgi:application
+    ports:
+      - "8001:8001"
+    env_file:
+      - ./.env
   bdio-db:
     image: postgres:16-alpine
     volumes:

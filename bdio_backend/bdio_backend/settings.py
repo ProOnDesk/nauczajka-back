@@ -12,21 +12,28 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 from datetime import timedelta
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-#_z!'
+DEBUG = bool(int(os.environ.get('DJANGO_DEBUG', 0)))
+if DEBUG:
+    FRONTED_URL = 'http://localhost:5173'
+    BACKEND_URL = 'http://localhost:8000'
+else:
+    FRONTED_URL = os.environ.get('FRONTEND_URL', 'http://localhost:5173')
+    BACKEND_URL = os.environ.get('BACKEND_URL', 'http://localhost:8000')
+print(BACKEND_URL)
+print(DEBUG)
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS').split(' ')
 
 
 # Application definition
@@ -153,8 +160,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/static/'
-MEDIA_URL = 'static/media/'
+STATIC_URL = 'static/'
+MEDIA_URL = 'media/'
 
 MEDIA_ROOT = '../vol/web/media'
 STATIC_ROOT = '../vol/web/static'
@@ -182,7 +189,7 @@ SPECTACULAR_SETTINGS = {
 }
 # JWT settings
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": False,
@@ -221,10 +228,10 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
 
-FRONTED_URL = 'http://localhost:5173'
-BACKEND_URL = 'http://localhost:8000'
 
+# CORS settings
 CORS_ALLOW_ALL_ORIGINS = True
+
 
 AUTH_USER_MODEL = 'user.User'
 
