@@ -47,6 +47,11 @@ class UserUpdateSerializer(ModelSerializer):
     """
     Serializer for updating user profile
     """
+    def get_image_profile(self, obj):
+        if obj.profile_image:
+            return obj.profile_image.url
+        return None
+    
     class Meta:
         model = User
         fields = ('id', 'email', 'first_name', 'last_name', 'profile_image', 'password', 'is_tutor', 'created_at')
