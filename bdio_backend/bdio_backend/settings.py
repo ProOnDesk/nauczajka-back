@@ -227,7 +227,7 @@ if DEBUG:
 else:
     FRONTED_URL = os.environ.get('FRONTEND_URL', 'http://localhost:5173')
     BACKEND_URL = os.environ.get('BACKEND_URL', 'http://localhost:8000')
-
+print(BACKEND_URL)
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = True
 
