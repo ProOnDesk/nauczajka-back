@@ -50,7 +50,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'id': str(user.id),
                     'first_name': user.first_name,
                     'last_name': user.last_name,
-                    'profile_image': f"{settings.BACKEND_URL}{user.profile_image.url}",
+                    'profile_image': f"{user.profile_image.url}",
                 }
             }
         )
