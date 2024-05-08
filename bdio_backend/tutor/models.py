@@ -48,16 +48,14 @@ class TutorScheduleItems(models.Model):
         """
         Walidacja zakresu czasowego, aby uniknąć nakładających się terminów.
         """
-        # Sprawdź czy start_time nie jest późniejszy niż end_time
         if self.start_time >= self.end_time:
             raise ValidationError("Czas rozpoczęcia musi być wcześniejszy niż czas zakończenia.")
         
-        # Sprawdź czy istnieją już inne TutorScheduleItems nakładające się na ten przedział czasowy
         overlapping_items = TutorScheduleItems.objects.filter(
             tutor=self.tutor,
             start_time__lt=self.end_time,
             end_time__gt=self.start_time
-        ).exclude(pk=self.pk)  # Wyklucz aktualny obiekt z wyników, gdy edytujemy istniejący obiekt
+        ).exclude(pk=self.pk) 
         
         if overlapping_items.exists():
             raise ValidationError(_("Your schedule is overlapping with another schedule."))
