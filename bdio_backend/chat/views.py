@@ -62,3 +62,28 @@ class ConversationDetailAPIView(generics.ListAPIView):
             return queryset.filter(conversation_id=conversation_id).order_by('created_at')
         except Conversation.DoesNotExist:
             return queryset.none()
+
+@extend_schema(tags=['Chat'])
+class ConversationRetrieveAPIView(generics.RetrieveAPIView):
+    """
+    Retrieve a conversation by user id
+    """
+    serializer_class = ConversationSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Conversation.objects.all()
+    
+    def get_object(self):
+        queryset = self.get_queryset()
+        user_id = self.kwargs.get('id')
+        obj = queryset.filter(users__id=user_id).filter(users__id=user_id).distinct().first()
+        return obj
+    
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if not instance:
+            return Response({'detail': _('Brak konwersacji')}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)

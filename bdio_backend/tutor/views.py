@@ -133,7 +133,7 @@ class TutorListView(generics.ListAPIView):
     """
     authentication_classes = []
     serializer_class = TutorSerializer
-    queryset = Tutor.objects.all()
+    queryset = Tutor.objects.filter(user__is_confirmed=True)
     permission_classes = (AllowAny,)
     authentication_classes = []
     filter_backends = [DjangoFilterBackend]
@@ -145,7 +145,7 @@ class TutorListView(generics.ListAPIView):
 class TutorViewSet(viewsets.ViewSet):
     authentication_classes = []
     serializer_class = TutorSerializer
-    queryset = Tutor.objects.all()
+    queryset = Tutor.objects.filter(user__is_confirmed=True)
     
     def list(self, request):
         """
@@ -162,7 +162,7 @@ class TutorDetailView(generics.RetrieveAPIView):
     """
     authentication_classes = []
     serializer_class = TutorDetailSerializer
-    queryset = Tutor.objects.all()
+    queryset = Tutor.objects.filter(user__is_confirmed=True)
     lookup_field = 'id'
     permission_classes = (AllowAny,)
     
