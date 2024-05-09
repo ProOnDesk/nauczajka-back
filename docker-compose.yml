@@ -20,16 +20,32 @@ services:
     env_file:
       - ./.env
   nginx:
-    image: nginx:1.21
+    image: nginx:stable
+    restart: always
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ./bdio_backend:/bdio_backend
       - ./nginx:/etc/nginx/conf.d
+      - web-root:/var/www/html
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
       - dev-static-data:/vol/web
     depends_on:
       - bdio-app
+    env_file:
+      - ./.env
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - web-root:/var/www/html
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+    depends_on:
+      - nginx
+    command: certonly --webroot --webroot-path=/var/www/html --email "$EMAIL" --agree-tos --no-eff-email --staging -d "$DOMAIN" -d "www.$DOMAIN"
     env_file:
       - ./.env
 
@@ -42,6 +58,7 @@ services:
       - "8001:8001"
     env_file:
       - ./.env
+
   bdio-db:
     image: postgres:16-alpine
     volumes:
@@ -59,3 +76,6 @@ services:
 volumes:
   postgres_data:
   dev-static-data:
+  certbot-etc:
+  certbot-var:
+  web-root:
