@@ -8,6 +8,7 @@ from .views import (
     DeleteUserView,
     RateTutorView,
     RatingsMeView,
+    BestRatingsView,
 )
 from django_rest_passwordreset.urls import reset_password_request_token, reset_password_confirm
 
@@ -23,5 +24,6 @@ urlpatterns = [
     path('check_password/', CheckUserPasswordView.as_view(), name='check_password'),
     path('rate_tutor/<int:tutor_id>/', RateTutorView.as_view(), name='rate_tutor'),
     path('ratings/me/', RatingsMeView.as_view(), name='ratings_me'),
+    path('ratings/best/', BestRatingsView.as_view(), name='best_ratings'),
     path('tutor/', include('tutor.urls', namespace='tutor')),
 ]

@@ -11,6 +11,8 @@ from django.conf import settings
 from django.utils.translation import gettext as _
 
 from drf_spectacular.utils import extend_schema
+from django_filters.rest_framework import DjangoFilterBackend
+from user.filters import RatingsFilter
 
 from .serializers import (
     CreateUserSerializer,
@@ -219,6 +221,7 @@ class RateTutorView(APIView):
         tutor_rating.delete()
         return Response({"Info": _("Rating deleted.")}, status=status.HTTP_200_OK)
         
+        
 @extend_schema(tags=['Ratings'])
 class RatingsMeView(APIView):
     """
@@ -235,3 +238,14 @@ class RatingsMeView(APIView):
         ratings = TutorRatings.objects.filter(student=user)
         serializer = self.serializer_class(ratings, many=True)
         return Response({"ratings": serializer.data}, status=status.HTTP_200_OK)
+
+
+@extend_schema(tags=['Ratings'])
+class BestRatingsView(generics.ListAPIView):
+    """
+    Get best ratings
+    """
+    serializer_class = RatingsMeSerializer
+    queryset = TutorRatings.objects.all().order_by('-rating')
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = RatingsFilter
