@@ -8,7 +8,7 @@ services:
       - "8000:8000"
     volumes:
       - ./bdio_backend:/bdio_backend
-      - dev-static-data:/vol/web
+      - /vol/web/:/vol/web
     command: >
       sh -c "python manage.py wait_for_db && python manage.py makemigrations && python manage.py migrate && python manage.py move_media && gunicorn bdio_backend.wsgi:application --bind 0.0.0.0:8000"
     expose:
@@ -17,35 +17,6 @@ services:
       - bdio-db
       - redis
       - daphne
-    env_file:
-      - ./.env
-  nginx:
-    image: nginx:stable
-    restart: always
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./bdio_backend:/bdio_backend
-      - ./nginx:/etc/nginx/conf.d
-      - web-root:/var/www/html
-      - certbot-etc:/etc/letsencrypt
-      - certbot-var:/var/lib/letsencrypt
-      - dev-static-data:/vol/web
-    depends_on:
-      - bdio-app
-    env_file:
-      - ./.env
-
-  certbot:
-    image: certbot/certbot
-    volumes:
-      - web-root:/var/www/html
-      - certbot-etc:/etc/letsencrypt
-      - certbot-var:/var/lib/letsencrypt
-    depends_on:
-      - nginx
-    command: certonly --webroot --webroot-path=/var/www/html --email "$EMAIL" --agree-tos --no-eff-email --staging -d "$DOMAIN" -d "www.$DOMAIN"
     env_file:
       - ./.env
 
@@ -75,7 +46,3 @@ services:
 
 volumes:
   postgres_data:
-  dev-static-data:
-  certbot-etc:
-  certbot-var:
-  web-root:
