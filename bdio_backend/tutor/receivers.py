@@ -23,7 +23,6 @@ def update_tutor_avg_rating(sender, instance, **kwargs):
     avg_rating = TutorRatings.objects.filter(tutor=tutor).aggregate(Avg('rating'))['rating__avg']
     tutor.avg_rating = avg_rating if avg_rating else 0
     tutor.save()
-    print("cos sie wyknoalo")
     
 @receiver(pre_save, sender=ConversationMessage)
 def update_conversation_updated_at(sender, instance, **kwargs):
