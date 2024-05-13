@@ -37,9 +37,9 @@ class TutorFilter(filters.FilterSet):
     class Meta:
         model = Tutor
         fields = {
-            'avg_rating': ['lt', 'gt'],
+            'avg_rating': ['lte', 'gte'],
             'skills': ['exact'],
-            'price': ['lt', 'gt'],
+            'price': ['lte', 'gte'],
             'online_sessions_available': ['exact'],
             'in_person_sessions_available': ['exact'],
             'individual_sessions_available': ['exact'],
