@@ -14,7 +14,8 @@ class Conversation(models.Model):
     def __str__(self):
         users_emails = " ".join(f'{user.email}, ' for user in self.users.all())
         return f'{self.id} - {users_emails}'
-    
+
+            
 class ConversationMessage(models.Model):
     """
     Conversation message model
@@ -23,4 +24,4 @@ class ConversationMessage(models.Model):
     conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='messages')
     body = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='messages')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='messages')
