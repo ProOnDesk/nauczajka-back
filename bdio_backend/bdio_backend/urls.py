@@ -14,7 +14,8 @@ urlpatterns = [
     path('api/', include('api.urls')),
     path('api/user/', include('user.urls')),
     path('api/chat/', include('chat.urls')),
-] 
+]
 
-if settings.DEBUG == True:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)    
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
