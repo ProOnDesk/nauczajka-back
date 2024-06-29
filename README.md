@@ -1,5 +1,3 @@
-# Django REST Framework Project with Channels, PostgreSQL, Redis, and Docker
-
 ## Project Overview
 
 This project aims to develop an online tutoring platform using Django, Django Rest Framework, Channels for real-time communication, PostgreSQL for database management, Redis for storing chat history, and Docker for containerization. The platform will facilitate interactions between tutors and students, allowing them to manage profiles, schedule sessions, provide reviews, and engage in real-time chat.
