@@ -1,3 +1,5 @@
 from django.contrib import admin
+from reporting.models import Respond, Issue
 
-# Register your models here.
+admin.site.register(Respond)
+admin.site.register(Issue)
