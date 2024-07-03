@@ -8,9 +8,10 @@ from chat.models import Conversation, ConversationMessage
 from chat.serializers import ConversationSerializer, ConversationMessagesSerializer
 from drf_spectacular.utils import extend_schema
 from django_filters.rest_framework import DjangoFilterBackend
-from chat.filters import ConversationMessageFilter
 from rest_framework import generics
 from django.utils.translation import gettext as _
+
+from core.pagination import CustomPagination
 
 @extend_schema(tags=['Chat'])
 class ConversationCreateAPIView(APIView):
@@ -38,6 +39,7 @@ class ConversationListAPIView(ListAPIView):
     """
     serializer_class = ConversationSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = CustomPagination
 
     def get_queryset(self):
         return self.request.user.conversations.order_by('-updated_at')
@@ -49,9 +51,9 @@ class ConversationDetailAPIView(generics.ListAPIView):
     serializer_class = ConversationMessagesSerializer
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
-    filterset_class = ConversationMessageFilter
     queryset = ConversationMessage.objects.all()
-    
+    pagination_class = CustomPagination
+
     def get_queryset(self, *args, **kwargs):
         queryset = super().get_queryset()
         conversation_id = self.kwargs.get('id')

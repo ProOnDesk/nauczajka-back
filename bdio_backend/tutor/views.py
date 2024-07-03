@@ -29,6 +29,7 @@ from .serializers import (
     TutorLocationSerializer,
     TutorIndividualGroupSessionsSerializer,
 )
+from core.pagination import CustomPagination
 
 
 @extend_schema(tags=['Tutor Description'])
@@ -138,6 +139,7 @@ class TutorListView(generics.ListAPIView):
     authentication_classes = []
     filter_backends = [DjangoFilterBackend]
     filterset_class = TutorFilter
+    pagination_class = CustomPagination
     
     
 
