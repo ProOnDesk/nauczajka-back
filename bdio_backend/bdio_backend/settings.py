@@ -30,7 +30,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 DEBUG = bool(os.environ.get('DJANGO_DEBUG'))
 
 if DEBUG:
-    FRONTED_URL = 'http://localhost:3000'
+    FRONTED_URL = 'http://localhost:5173'
     BACKEND_URL = 'http://localhost:8000'
 
 os.environ.get('DJANGO_ALLOWED_HOSTS').split(' ')
@@ -193,7 +193,10 @@ REST_FRAMEWORK = {
 AUTH_COOKIE = 'access'
 AUTH_COOKIE_ACCESS_MAX_AGE = 60 * 15
 AUTH_COOKIE_REFRESH_MAX_AGE = 60 * 60 * 24 * 7
-AUTH_COOKIE_SECURE = os.environ.get('AUTH_COOKIE_SECURE')
+AUTH_COOKIE_SECURE = bool(os.environ.get('AUTH_COOKIE_SECURE'))
+AUTH_COOKIE_HTTP_ONLY = True
+AUTH_COOKIE_PATH = '/'
+AUTH_COOKIE_SAMESITE = 'None'
 
 # JWT settings
 SIMPLE_JWT = {
