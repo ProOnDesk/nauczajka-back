@@ -1,6 +1,6 @@
 from django.urls import path, include
 
-from .views import (
+from chat.views import (
     ConversationListAPIView,
     ConversationCreateAPIView,
     ConversationDetailAPIView,

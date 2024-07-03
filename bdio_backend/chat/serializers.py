@@ -17,6 +17,7 @@ class UserSerializer(serializers.ModelSerializer):
             return obj.profile_image.url
         return None
     
+    
     class Meta:
         model = User
         fields = ('id', 'first_name', 'last_name', 'profile_image')
@@ -35,7 +36,7 @@ class ConversationSerializer(serializers.ModelSerializer):
     users = UserSerializer(many=True, required=True)
     last_message = serializers.SerializerMethodField()
 
-    
+ 
     class Meta:
         model = Conversation
         fields = '__all__'
