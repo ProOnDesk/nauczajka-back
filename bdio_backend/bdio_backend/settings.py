@@ -35,6 +35,9 @@ if DEBUG:
 
 os.environ.get('DJANGO_ALLOWED_HOSTS').split(' ')
 
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = True
+
 INSTALLED_APPS = [
     # Third-party apps
     'daphne',
@@ -238,9 +241,6 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
-
-
-CORS_ALLOW_ALL_ORIGINS = True
 
 AUTH_USER_MODEL = 'user.User'
 
