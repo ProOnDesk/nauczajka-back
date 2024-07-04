@@ -5,6 +5,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from django.conf import settings
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
+import urllib.parse
+
+from djoser.social.views import ProviderAuthView
+from django.conf import settings
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -158,3 +163,57 @@ class LogoutView(APIView):
         
         return response
     
+    
+@extend_schema(
+    tags=['OAuth2'],
+    parameters=[
+        OpenApiParameter(
+            name='provider',
+            location=OpenApiParameter.PATH,
+            description='The authentication provider (e.g., google, facebook).',
+            required=True,
+            type=str,
+            examples=[
+                OpenApiExample(
+                    'Example 1',
+                    value='google-oauth2',
+                    description='Google authentication provider'
+                ),
+                OpenApiExample(
+                    'Example 2',
+                    value='facebook-oauth2',
+                    description='Facebook authentication provider'
+                )
+            ]
+        ),
+    ],
+)
+
+class CustomProviderAuthView(ProviderAuthView):
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        
+        if response.status_code == 201:
+            access_token = response.data.get('access')
+            refresh_token = response.data.get('refresh')
+            
+            response.set_cookie(
+                'access',
+                access_token,
+                max_age=settings.AUTH_COOKIE_ACCESS_MAX_AGE,
+                path=settings.AUTH_COOKIE_PATH,
+                secure=settings.AUTH_COOKIE_SECURE,
+                httponly=settings.AUTH_COOKIE_HTTP_ONLY,
+                samesite=settings.AUTH_COOKIE_SAMESITE
+            )
+            response.set_cookie(
+                'refresh',
+                refresh_token,
+                max_age=settings.AUTH_COOKIE_ACCESS_MAX_AGE,
+                path=settings.AUTH_COOKIE_PATH,
+                secure=settings.AUTH_COOKIE_SECURE,
+                httponly=settings.AUTH_COOKIE_HTTP_ONLY,
+                samesite=settings.AUTH_COOKIE_SAMESITE
+            )
+        
+        return response
