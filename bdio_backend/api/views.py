@@ -5,6 +5,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from django.conf import settings
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
+import urllib.parse
+
+from djoser.social.views import ProviderAuthView
+from django.conf import settings
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -158,3 +163,79 @@ class LogoutView(APIView):
         
         return response
     
+    
+@extend_schema(
+    tags=['OAuth2'],
+    parameters=[
+        OpenApiParameter(
+            name='provider',
+            location=OpenApiParameter.PATH,
+            description='The authentication provider (e.g., google, facebook).',
+            required=True,
+            type=str,
+            examples=[
+                OpenApiExample(
+                    'Example 1',
+                    value='google-oauth2',
+                    description='Google authentication provider'
+                ),
+                OpenApiExample(
+                    'Example 2',
+                    value='facebook-oauth2',
+                    description='Facebook authentication provider'
+                )
+            ]
+        ),
+    ],
+)
+
+@extend_schema(tags=['OAuth2'])
+class CustomProviderAuthView(ProviderAuthView):
+    """
+    Custom provider authentication view to handle OAuth2 authentication.
+
+    This view handles GET and POST requests for OAuth2 authentication with a provider.
+    
+    GET Method:
+    - Query Parameters:
+      - redirect_uri (str): The URI to redirect to after authentication.
+    - Note: Query parameters do not work correctly in Swagger UI, so test this endpoint in Postman or in the front-end.
+    - Description: This method initiates the authentication process with a provider and redirects to the provider's authorization page.
+
+    POST Method:
+    - Query Parameters:
+      - state (str): The state parameter received from the initial request.
+      - code (str): The authorization code received from the provider.
+    - Important: ADD query param state as cookie too!
+    - Note: Query parameters do not work correctly in Swagger UI, so test this endpoint in Postman or in the front-end.
+    - Description: This method handles the callback from the provider after the user has authenticated, exchanges the authorization code for access and refresh tokens, and sets them as cookies.
+    """
+    def post(self, request, *args, **kwargs):
+
+        response = super().post(request, *args, **kwargs)
+        
+        if response.status_code == 201:
+            access_token = response.data.get('access')
+            refresh_token = response.data.get('refresh')
+            
+            response.set_cookie(
+                'access',
+                access_token,
+                max_age=settings.AUTH_COOKIE_ACCESS_MAX_AGE,
+                path=settings.AUTH_COOKIE_PATH,
+                secure=settings.AUTH_COOKIE_SECURE,
+                httponly=settings.AUTH_COOKIE_HTTP_ONLY,
+                samesite=settings.AUTH_COOKIE_SAMESITE
+            )
+            response.set_cookie(
+                'refresh',
+                refresh_token,
+                max_age=settings.AUTH_COOKIE_ACCESS_MAX_AGE,
+                path=settings.AUTH_COOKIE_PATH,
+                secure=settings.AUTH_COOKIE_SECURE,
+                httponly=settings.AUTH_COOKIE_HTTP_ONLY,
+                samesite=settings.AUTH_COOKIE_SAMESITE
+            )
+        
+        return response
+

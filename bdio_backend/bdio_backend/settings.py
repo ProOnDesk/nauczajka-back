@@ -60,6 +60,8 @@ INSTALLED_APPS = [
     'django_rest_passwordreset',
     'django_filters',
     'django_extensions',
+    'djoser',
+    'social_django',
     
     # Local apps
     'core',
@@ -126,7 +128,43 @@ DATABASES = {
         'PORT': os.environ.get('DB_PORT'),
     }
 }
+AUTHENTICATION_BACKENDS = [
+    'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.facebook.FacebookOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+]
 
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'api.authentication.CustomJWTAuthentication',
+    ),
+}
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('GOOGLE_AUTH_KEY')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('GOOGLE_AUTH_SECRET_KEY')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/userinfo.profile',
+    'openid'
+]
+SOCIAL_AUTH_GOOGLE_OAUTH2_EXTRA_DATA = ['first_name', 'last_name', 'image']
+
+
+# SOCIAL_AUTH_FACEBOOK_KEY = os.environ.get('FACEBOOK_AUTH_KEY')
+# SOCIAL_AUTH_FACEBOOK_SECRET = os.environ.get('FACEBOOK_AUTH_SECRET_KEY')
+# SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+# SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
+#     'fields': 'email, first_name, last_name'
+# }
+
+AUTH_COOKIE = 'access'
+AUTH_COOKIE_ACCESS_MAX_AGE = 60 * 15
+AUTH_COOKIE_REFRESH_MAX_AGE = 60 * 60 * 24 * 7
+AUTH_COOKIE_SECURE = bool(os.environ.get('AUTH_COOKIE_SECURE'))
+AUTH_COOKIE_HTTP_ONLY = True
+AUTH_COOKIE_PATH = '/'
+AUTH_COOKIE_SAMESITE = 'None'
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -186,20 +224,6 @@ SPECTACULAR_SETTINGS = {
     'COMPONENT_SPLIT_REQUEST': True,
 }
 
-REST_FRAMEWORK = {
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'api.authentication.CustomJWTAuthentication',
-    ),
-}
-
-AUTH_COOKIE = 'access'
-AUTH_COOKIE_ACCESS_MAX_AGE = 60 * 15
-AUTH_COOKIE_REFRESH_MAX_AGE = 60 * 60 * 24 * 7
-AUTH_COOKIE_SECURE = bool(os.environ.get('AUTH_COOKIE_SECURE'))
-AUTH_COOKIE_HTTP_ONLY = True
-AUTH_COOKIE_PATH = '/'
-AUTH_COOKIE_SAMESITE = 'None'
 
 # JWT settings
 SIMPLE_JWT = {
@@ -262,6 +286,11 @@ DJANGO_REST_MULTITOKENAUTH_RESET_TOKEN_EXPIRY_TIME = 0.5 # 30 minutes
 # Is email confirmation required
 IS_CUSTOM_CONFIRM_EMAIL_REQUIRED = True
 
+DJOSER = {
+    'TOKEN_MODEL': None,
+    'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': os.environ.get('REDIRECT_URLS').split(' ')
+
+}
 # Graph settings
 
 GRAPH_MODELS = {
