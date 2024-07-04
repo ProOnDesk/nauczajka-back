@@ -189,8 +189,29 @@ class LogoutView(APIView):
     ],
 )
 
+@extend_schema(tags=['OAuth2'])
 class CustomProviderAuthView(ProviderAuthView):
+    """
+    Custom provider authentication view to handle OAuth2 authentication.
+
+    This view handles GET and POST requests for OAuth2 authentication with a provider.
+    
+    GET Method:
+    - Query Parameters:
+      - redirect_uri (str): The URI to redirect to after authentication.
+    - Note: Query parameters do not work correctly in Swagger UI, so test this endpoint in Postman or in the front-end.
+    - Description: This method initiates the authentication process with a provider and redirects to the provider's authorization page.
+
+    POST Method:
+    - Query Parameters:
+      - state (str): The state parameter received from the initial request.
+      - code (str): The authorization code received from the provider.
+    - Important: ADD query param state as cookie too!
+    - Note: Query parameters do not work correctly in Swagger UI, so test this endpoint in Postman or in the front-end.
+    - Description: This method handles the callback from the provider after the user has authenticated, exchanges the authorization code for access and refresh tokens, and sets them as cookies.
+    """
     def post(self, request, *args, **kwargs):
+
         response = super().post(request, *args, **kwargs)
         
         if response.status_code == 201:
@@ -217,3 +238,4 @@ class CustomProviderAuthView(ProviderAuthView):
             )
         
         return response
+
