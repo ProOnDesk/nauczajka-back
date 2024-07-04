@@ -30,7 +30,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 DEBUG = bool(os.environ.get('DJANGO_DEBUG'))
 
 if DEBUG:
-    FRONTED_URL = 'http://localhost:5173'
+    FRONTED_URL = 'http://localhost:3000'
     BACKEND_URL = 'http://localhost:8000'
 
 os.environ.get('DJANGO_ALLOWED_HOSTS').split(' ')
