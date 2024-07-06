@@ -5,13 +5,19 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 
 from chat.models import Conversation, ConversationMessage
-from chat.serializers import ConversationSerializer, ConversationMessagesSerializer
+
+from chat.serializers import (
+    ConversationSerializer,
+    ConversationMessagesSerializer,
+    UploadConversationMessageFileSerializer
+)
 from drf_spectacular.utils import extend_schema
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
 from django.utils.translation import gettext as _
 
 from core.pagination import CustomPagination
+from rest_framework.parsers import MultiPartParser, FormParser
 
 @extend_schema(tags=['Chat'])
 class ConversationCreateAPIView(APIView):
@@ -89,3 +95,22 @@ class ConversationRetrieveAPIView(generics.RetrieveAPIView):
         
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
+     
+
+@extend_schema(tags=['Chat'])
+class UploadConversationMessageFileAPIView(APIView):
+    """
+    API view for uploading conversation message files.
+    """
+    serializer_class = UploadConversationMessageFileSerializer
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+    
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data, context={'user': request.user})
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -63,7 +63,7 @@ class ConversationSerializer(serializers.ModelSerializer):
         return conversation
 
     def validate_users(self, value):
-        if len(value) != 2:
+        if len(value) == 2:
             raise serializers.ValidationError(_('Rozmowa musi mieć dokładnie dwóch użytkowników.'))
         
         if value[0]['id'] == value[1]['id']:
@@ -112,4 +112,37 @@ class ConversationMessagesSerializer(serializers.ModelSerializer):
             'username': {'read_only': True},
         }
         ordering = ['-created_at']
+        
+
+class UploadConversationMessageFileSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the file message object
+    """
+    
+    
+    class Meta:
+        model = ConversationMessage
+        fields = '__all__'
+        extra_kwargs = {
+            'id': {'read_only': True},
+            'body': {'read_only': True},
+            'created_at': {'read_only': True},
+            'created_by': {'read_only': True},
+        }
+        
+        
+    def create(self, validated_data):
+        """
+        Create a conversation
+        """
+        user = self.context['user']
+        body_file_name = validated_data['file'].name
+        
+        conversation_message = ConversationMessage.objects.create(
+            created_by=user, 
+            body=body_file_name,
+            **validated_data
+            )
+        
+        return conversation_message
     
