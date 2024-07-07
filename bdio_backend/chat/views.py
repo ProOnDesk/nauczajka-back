@@ -15,9 +15,13 @@ from drf_spectacular.utils import extend_schema
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
 from django.utils.translation import gettext as _
-
+from django.utils import timezone
 from core.pagination import CustomPagination
 from rest_framework.parsers import MultiPartParser, FormParser
+
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+
 
 @extend_schema(tags=['Chat'])
 class ConversationCreateAPIView(APIView):
@@ -45,7 +49,7 @@ class ConversationListAPIView(ListAPIView):
     """
     serializer_class = ConversationSerializer
     permission_classes = [IsAuthenticated]
-    pagination_class = CustomPagination
+    # pagination_class = CustomPagination
 
     def get_queryset(self):
         return self.request.user.conversations.order_by('-updated_at')
@@ -58,7 +62,7 @@ class ConversationDetailAPIView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
     queryset = ConversationMessage.objects.all()
-    pagination_class = CustomPagination
+    # pagination_class = CustomPagination
 
     def get_queryset(self, *args, **kwargs):
         queryset = super().get_queryset()
@@ -110,7 +114,34 @@ class UploadConversationMessageFileAPIView(APIView):
         serializer = self.serializer_class(data=request.data, context={'user': request.user})
         
         if serializer.is_valid():
-            serializer.save()
+            message = serializer.save()
+            self.broadcast_to_channel(message)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def broadcast_to_channel(self, message):
+        channel_layer = get_channel_layer()
+        
+        conversation_group_name = f'chat_{message.conversation.id}'
+        created_by = message.created_by
+        
+        created_at_formatted = message.created_at.astimezone(timezone.get_current_timezone()).strftime('%Y-%m-%dT%H:%M:%S.%f%z')
+
+        async_to_sync(channel_layer.group_send)(
+            conversation_group_name,
+            {
+                'type': 'chat_message',
+                'id': str(message.id),
+                'conversation': str(message.conversation.id),
+                'body': message.body,
+                'created_at': created_at_formatted,
+                'file': message.file.url,
+                'created_by': {
+                    'id': str(created_by.id),
+                    'first_name': created_by.first_name,
+                    'last_name': created_by.last_name,
+                    'profile_image': created_by.profile_image.url
+                }
+            }
+        )

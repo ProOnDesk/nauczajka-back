@@ -100,11 +100,15 @@ class ConversationMessagesSerializer(serializers.ModelSerializer):
     Serializer for the conversation message object
     """
     created_by = UserSerializer()
-    
+    file = serializers.SerializerMethodField()
+    def get_file(self, obj):
+        if obj.file:
+            return obj.file.url
+        return None
     
     class Meta:
         model = ConversationMessage
-        fields = ('id', 'conversation', 'body', 'created_at', 'created_by')
+        fields = ('id', 'conversation', 'body', 'created_at', 'created_by', 'file')
         extra_kwargs = {
             'id': {'read_only': True},
             'conversation': {'read_only': True},
