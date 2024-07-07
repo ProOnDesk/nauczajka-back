@@ -31,21 +31,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
         data = json.loads(text_data)
 
         body = data['data']['body']
-        created_by = data['data']['created_by']
+        user = self.scope['user']
 
-        message = await self.save_message(self.conversation_id, body, created_by)
-        
+        message = await self.save_message(self.conversation_id, body, user)
         created_at_formatted = message.created_at.astimezone(timezone.get_current_timezone()).strftime('%Y-%m-%dT%H:%M:%S.%f%z')
-
-        user = await sync_to_async(User.objects.get)(id=created_by)
+        
+        
         await self.channel_layer.group_send(
             self.conversation_group_name,
             {
                 'type': 'chat_message',
                 'id': str(message.id),
                 'conversation': self.conversation_id,
-                'body': body,
-                'created_at': created_at_formatted,           
+                'body': message.body,
+                'created_at': created_at_formatted,
+                'file': message.file.name,     
                 'created_by': {
                     'id': str(user.id),
                     'first_name': user.first_name,
@@ -61,18 +61,20 @@ class ChatConsumer(AsyncWebsocketConsumer):
         body = event['body']
         created_at = event['created_at']
         created_by = event['created_by']
+        file = event['file']
 
         await self.send(text_data=json.dumps({
             'id': str(id),
             'conversation': conversation,
             'body': body,
+            'file': file,
             'created_at': created_at,
             'created_by': created_by,
         }))
 
     @sync_to_async
     def save_message(self, conversation_id, body, created_by):
-        user = self.scope['user']
-        message = ConversationMessage.objects.create(conversation_id=conversation_id, body=body, created_by=user)
+        
+        message = ConversationMessage.objects.create(conversation_id=conversation_id, body=body, created_by=created_by)
         self.last_message = message
         return message
