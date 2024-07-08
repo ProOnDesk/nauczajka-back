@@ -19,7 +19,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bdio_backend.settings')
 application = get_asgi_application()
 
 from chat import routing
-from chat.token_auth import TokenAuthMiddleware
+from core.token_auth import TokenAuthMiddleware
 
 application = ProtocolTypeRouter({
     'http': application,
