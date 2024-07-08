@@ -1,7 +1,6 @@
 from django.urls import path
-from . import consumers
-from rest_framework.schemas import get_schema_view
+from chat.consumers import ChatConsumer
 
 websocket_urlpatterns = [
-    path('ws/chat/<uuid:conversation_id>/', consumers.ChatConsumer.as_asgi()),
+    path('ws/chat/<uuid:conversation_id>/', ChatConsumer.as_asgi()),
 ]
