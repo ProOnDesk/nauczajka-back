@@ -17,3 +17,5 @@ python-dotenv>=1.0.1, <1.1
 social-auth-app-django>=5.4.1, <5.5
 social-auth-core>=4.5.4, <4.6
 djoser>=2.2.3, <2.3
+celery>=5.4.0, <5.5
+redis>=5.0.7, <5.1

@@ -24,6 +24,7 @@ def send_personal_notification(users, message):
     
     notification = Notification.objects.create(message=message)
     if isinstance(users, User):
+        print("Hej")
         notification.users.add(users)
         async_to_sync(channel_layer.group_send)(
             f'notifications_{users.id}',
