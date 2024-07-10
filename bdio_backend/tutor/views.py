@@ -139,7 +139,7 @@ class TutorListView(generics.ListAPIView):
     authentication_classes = []
     filter_backends = [DjangoFilterBackend]
     filterset_class = TutorFilter
-    # pagination_class = CustomPagination
+    pagination_class = CustomPagination
     
     
 
