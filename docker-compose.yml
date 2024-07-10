@@ -31,6 +31,26 @@ services:
     ports:
       - "6379:6379"
 
+  celery:
+    build:
+      context: .
+    command: celery -A bdio_backend worker --loglevel=debug
+    volumes:
+      - ./bdio_backend:/bdio_backend
+    env_file:
+      - ./.env
+    depends_on:
+      - bdio-db
+      - redis
+
+  flower:
+    image: mher/flower:0.9.7
+    ports:
+      - "5555:5555"
+    command: flower --broker=redis://redis:6379
+    depends_on:
+      - celery
+
 volumes:
   postgres_data:
   dev-static-data:
