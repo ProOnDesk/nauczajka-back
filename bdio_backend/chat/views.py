@@ -49,7 +49,7 @@ class ConversationListAPIView(ListAPIView):
     """
     serializer_class = ConversationSerializer
     permission_classes = [IsAuthenticated]
-    # pagination_class = CustomPagination
+    pagination_class = CustomPagination
 
     def get_queryset(self):
         return self.request.user.conversations.order_by('-updated_at')
@@ -62,7 +62,7 @@ class ConversationDetailAPIView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
     queryset = ConversationMessage.objects.all()
-    # pagination_class = CustomPagination
+    pagination_class = CustomPagination
 
     def get_queryset(self, *args, **kwargs):
         queryset = super().get_queryset()
