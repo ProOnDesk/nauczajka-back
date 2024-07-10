@@ -74,7 +74,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @sync_to_async
     def save_message(self, conversation_id, body, created_by):
-        
         message = ConversationMessage.objects.create(conversation_id=conversation_id, body=body, created_by=created_by)
         self.last_message = message
+        
         return message
