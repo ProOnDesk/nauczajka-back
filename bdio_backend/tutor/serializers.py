@@ -7,41 +7,6 @@ from user.serializers import UserSerializer
 from django.utils.translation import gettext as _
 
 
-class TutorDescriptionSerializer(ModelSerializer):
-    """
-    Serializer for the tutor description object
-    """
-    
-    
-    class Meta:
-        model = Tutor
-        fields = ('description',)
-
-
-class TutorPriceSerializer(ModelSerializer):
-    """
-    Serializer for the tutor price object
-    """
-    
-    
-    class Meta:
-        model = Tutor
-        fields = ('price',)
-
-    def validate(self, data):
-        """
-        Validate the price
-        """
-        if data['price'] < 0:
-            raise ValidationError(_("Price cannot be negative."))
-        
-        if data['price'] > 1000000:
-            raise ValidationError(_("Price cannot be more than 1000000."))
-        
-        return data
-
-      
-        
 class SkillsSerializer(ModelSerializer):
     """
     Serializer for the skills object
@@ -160,7 +125,7 @@ class TutorMeScheduleItemsSerializer(ModelSerializer):
             schedule_item = TutorScheduleItems(tutor=tutor, **data)
             schedule_item.clean()
         except ValidationError as e:
-            raise serializers.ValidationError(_(e.message))
+            raise ValidationError(_(e.message))
         
         return data
     
@@ -174,45 +139,31 @@ class TutorMeScheduleItemsSerializer(ModelSerializer):
         return schedule_item
     
     
-class TutorMethodSessionAvailabilitySerializer(ModelSerializer):
-    """
-    Serializer for the tutor method session availability object
-    """
-    
-    
+class TutorMeSerializer(ModelSerializer):
     class Meta:
         model = Tutor
-        fields = ('online_sessions_available', 'in_person_sessions_available')
+        fields = ('description', 'price', 'online_sessions_available', 'in_person_sessions_available', 'tutoring_location', 'individual_sessions_available', 'group_sessions_available')
         
-class TutorLocationSerializer(ModelSerializer):
-    """
-    Serializer for the tutor location object
-    """
-    
-    
-    class Meta:
-        model = Tutor
-        fields = ('tutoring_location',)
-
-    def validate(self, data):
+    def validate_price(self, value):
         """
-        Validate the tutoring location
+        Validate the price field
         """
-        if not data['tutoring_location']:
-            raise ValidationError(_("Tutoring location cannot be empty."))
+        if value < 0:
+            raise ValidationError(_("Price cannot be negative."))
+        elif value > 1000000:
+            raise ValidationError(_("Price cannot be more than 1000000"))
+        return value
         
-        if len(data['tutoring_location']) > 50:
-            raise ValidationError(_("Tutoring location cannot be longer than 50 characters."))
-        
-        return data
-
-    
-class TutorIndividualGroupSessionsSerializer(ModelSerializer):
-    """
-    Serializer for the tutor individual group sessions object
-    """
-    
-    
-    class Meta:
-        model = Tutor
-        fields = ('individual_sessions_available', 'group_sessions_available')
+    def update(self, instance, validated_data):
+        """
+        Update the tutor object
+        """
+        instance.description = validated_data.get('description', instance.description)
+        instance.price = validated_data.get('price', instance.price)
+        instance.online_sessions_available = validated_data.get('online_sessions_available', instance.online_sessions_available)
+        instance.in_person_sessions_available = validated_data.get('in_person_sessions_available', instance.in_person_sessions_available)
+        instance.tutoring_location = validated_data.get('tutoring_location', instance.tutoring_location)
+        instance.individual_sessions_available = validated_data.get('individual_sessions_available', instance.individual_sessions_available)
+        instance.group_sessions_available = validated_data.get('group_sessions_available', instance.group_sessions_available)
+        instance.save()
+        return instance
