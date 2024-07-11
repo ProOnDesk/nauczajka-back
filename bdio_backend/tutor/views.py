@@ -10,7 +10,7 @@ from rest_framework.permissions import AllowAny
 from django.utils.translation import gettext as _
 
 from tutor.permissions import IsTutor
-from tutor.models import Skills, Tutor, TutorScheduleItems
+from tutor.models import Skills, Tutor, TutorScheduleItems, TutorRatings
 
 from drf_spectacular.utils import extend_schema
 from django_filters.rest_framework import DjangoFilterBackend
@@ -23,7 +23,8 @@ from tutor.serializers import (
     TutorSerializer,
     TutorDetailSerializer,
     TutorMeScheduleItemsSerializer,
-    TutorMeSerializer
+    TutorMeSerializer,
+    RatingsSerializer
 )
 from core.pagination import CustomPagination
 
@@ -112,6 +113,29 @@ class TutorDetailView(generics.RetrieveAPIView):
     queryset = Tutor.objects.filter(user__is_confirmed=True)
     lookup_field = 'id'
     permission_classes = (AllowAny,)
+
+
+@extend_schema(tags=['Tutor all'])
+class TutorReviewView(generics.ListAPIView):
+    authentication_classes = []
+    serializer_class = RatingsSerializer
+    lookup_field = 'tutor_id'
+    permission_classes = [AllowAny]
+    pagination_class = CustomPagination
+    
+    def get_queryset(self):
+        return TutorRatings.objects.filter(tutor=self.kwargs['tutor_id'])
+    
+
+@extend_schema(tags=['Tutor all'])
+class TutorScheduleItemView(generics.ListAPIView):
+    authentication_classes = []
+    serializer_class = TutorMeScheduleItemsSerializer
+    lookup_field = 'tutor_id'
+    permission_classes = [AllowAny]
+    
+    def get_queryset(self):
+        return TutorScheduleItems.objects.filter(tutor=self.kwargs['tutor_id'])
     
 
 @extend_schema(tags=['Tutor Schedule'])

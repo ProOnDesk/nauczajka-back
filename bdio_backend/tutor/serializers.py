@@ -90,17 +90,15 @@ class TutorDetailSerializer(ModelSerializer):
     user_id = CharField(source='user.id', read_only=True)
     
     tutor_schedule_items = TutorScheduleItemsSerializer(many=True, read_only=True)
-    tutor_ratings = RatingsSerializer(many=True, read_only=True)
 
     
     class Meta:
         model = Tutor
-        fields = ('user_id', 'first_name', 'last_name', 'profile_image', 'description', 'skills', 'avg_rating', 'price', 'tutor_ratings', 'tutor_schedule_items', 'online_sessions_available', 'in_person_sessions_available', 'tutoring_location', 'online_sessions_available', 'in_person_sessions_available', 'individual_sessions_available', 'group_sessions_available')
+        fields = ('user_id', 'first_name', 'last_name', 'profile_image', 'description', 'skills', 'avg_rating', 'price',  'tutor_schedule_items', 'online_sessions_available', 'in_person_sessions_available', 'tutoring_location', 'online_sessions_available', 'in_person_sessions_available', 'individual_sessions_available', 'group_sessions_available')
         extra_kwargs = {
             'user_id': {'read_only': True},
             'profile_image': {'read_only': True},
             'avg_rating': {'read_only': True},
-            'tutors_ratings': {'read_only': True},
             'tutor_schedule_items': {'read_only': True},
         }
     
