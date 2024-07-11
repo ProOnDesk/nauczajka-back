@@ -17,71 +17,16 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from tutor.filters import TutorFilter
 
-from .serializers import (
-    TutorDescriptionSerializer,
-    TutorPriceSerializer,
+from tutor.serializers import (
     TutorSkillsSerializer,
     SkillsSerializer,
     TutorSerializer,
     TutorDetailSerializer,
     TutorMeScheduleItemsSerializer,
-    TutorMethodSessionAvailabilitySerializer,
-    TutorLocationSerializer,
-    TutorIndividualGroupSessionsSerializer,
+    TutorMeSerializer
 )
 from core.pagination import CustomPagination
 
-
-@extend_schema(tags=['Tutor Description'])
-class TutorDescriptionView(APIView):
-    """
-    View and update tutor description
-    """
-    permission_classes = (IsAuthenticated, IsTutor,)
-    serializer_class = TutorDescriptionSerializer
-    
-    def get(self, request):
-        """
-        Get tutor description
-        """
-        serializer = self.serializer_class(request.user.tutor)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    def patch(self, request):
-        """
-        Update tutor description
-        """
-        serializer = self.serializer_class(request.user.tutor, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@extend_schema(tags=['Tutor Price'])
-class TutorPriceView(APIView):
-    """
-    View and update tutor description
-    """
-    permission_classes = (IsAuthenticated, IsTutor,)
-    serializer_class = TutorPriceSerializer
-    
-    def get(self, request):
-        """
-        Get tutor description
-        """
-        serializer = self.serializer_class(request.user.tutor)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    def patch(self, request):
-        """
-        Update tutor description
-        """
-        serializer = self.serializer_class(request.user.tutor, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @extend_schema(tags=['Tutor Skills'])
@@ -236,38 +181,13 @@ class DeleteTutorMeScheduleItemView(APIView):
         return Response({"Info": _("Schedule item deleted successfully.")}, status=status.HTTP_200_OK)
     
 
-@extend_schema(tags=['Tutor method session availability'])
-class TutorMethodSessionAvailabilityView(APIView):
-    """
-    View and update tutor method session availability
-    """
-    permission_classes = (IsAuthenticated, IsTutor,)
-    serializer_class = TutorMethodSessionAvailabilitySerializer
-    
-    def get(self, request):
-        """
-        Get tutor description
-        """
-        serializer = self.serializer_class(request.user.tutor)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    def patch(self, request):
-        """
-        Update tutor description
-        """
-        serializer = self.serializer_class(request.user.tutor, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
 @extend_schema(tags=['Tutor Me'])
 class TutorMeView(APIView):
     """
     Get my tutor details
     """
     permission_classes = (IsAuthenticated, IsTutor,)
-    serializer_class = TutorDetailSerializer
+    serializer_class = TutorMeSerializer
     
     def get(self, request):
         """
@@ -282,60 +202,9 @@ class TutorMeView(APIView):
         Update my tutor details
         """
         tutor = request.user.tutor
-        serializer = self.serializer_class(tutor, data=request.data)
+        serializer = self.serializer_class(tutor, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    
-@extend_schema(tags=['Tutor location availability'])
-class TutorLocationView(APIView):
-    """
-    View and update tutor location
-    """
-    permission_classes = (IsAuthenticated, IsTutor,)
-    serializer_class = TutorLocationSerializer
-    
-    def get(self, request):
-        """
-        Get tutor location
-        """
-        serializer = self.serializer_class(request.user.tutor)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    def patch(self, request):
-        """
-        Update tutor location
-        """
-        serializer = self.serializer_class(request.user.tutor, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@extend_schema(tags=['Tutor Individual Group'])
-class TutorIndividualGroupView(APIView):
-    """
-    View and update tutor individual and group sessions
-    """
-    permission_classes = (IsAuthenticated, IsTutor,)
-    serializer_class = TutorIndividualGroupSessionsSerializer
-    
-    def get(self, request):
-        """
-        Get tutor individual and group sessions
-        """
-        tutor = request.user.tutor
-        return Response({"individual_sessions": tutor.individual_sessions_available, "group_sessions": tutor.group_sessions_available}, status=status.HTTP_200_OK)
-    
-    def patch(self, request):
-        """
-        Update tutor individual and group sessions
-        """
-        serializer = self.serializer_class(request.user.tutor, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
