@@ -27,6 +27,7 @@ from tutor.serializers import (
     RatingsSerializer
 )
 from core.pagination import CustomPagination
+from tutor.pagination import ReviewPagination
 
 
 
@@ -121,11 +122,17 @@ class TutorReviewView(generics.ListAPIView):
     serializer_class = RatingsSerializer
     lookup_field = 'tutor_id'
     permission_classes = [AllowAny]
-    pagination_class = CustomPagination
+    pagination_class = ReviewPagination
     
     def get_queryset(self):
-        return TutorRatings.objects.filter(tutor=self.kwargs['tutor_id'])
+        return TutorRatings.objects.filter(tutor=self.kwargs['tutor_id']).order_by('-created_at')
     
+    def list(self, request, *args, **kwargs):
+        tutor_id = self.kwargs['tutor_id']
+        
+        self.pagination_class.tutor_id = tutor_id
+        
+        return super().list(request, *args, **kwargs)
 
 @extend_schema(tags=['Tutor all'])
 class TutorScheduleItemView(generics.ListAPIView):

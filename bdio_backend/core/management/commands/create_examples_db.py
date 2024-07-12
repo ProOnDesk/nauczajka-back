@@ -70,6 +70,23 @@ class Command(BaseCommand):
                     user_obj.tutor.skills.set(random_skills)
                     tutor = Tutor.objects.get(user=user_obj)
                     tutor.description = fake.text()
+                    tutor.price = random.randint(30, 200)
+                    tutor.online_sessions_available = random.choice([True, False])
+                    tutor.in_person_sessions_available = random.choice([True, False])
+                    tutor.group_sessions_available = random.choice([True, False])
+                    tutor.individual_sessions_available = random.choice([True, False])
+                    tutor.tutoring_location = random.choice([
+                        "Warszawa", "Kraków", "Łódź", "Wrocław", "Poznań", "Gdańsk", "Szczecin", "Bydgoszcz", "Lublin", "Katowice",
+                        "Białystok", "Gdynia", "Częstochowa", "Radom", "Sosnowiec", "Toruń", "Kielce", "Gliwice", "Zabrze", "Olsztyn",
+                        "Bielsko-Biała", "Rzeszów", "Ruda Śląska", "Rybnik", "Tychy", "Dąbrowa Górnicza", "Opole", "Elbląg", "Płock", "Wałbrzych",
+                        "Zielona Góra", "Włocławek", "Tarnów", "Chorzów", "Koszalin", "Kalisz", "Legnica", "Grudziądz", "Słupsk", "Jaworzno",
+                        "Jastrzębie-Zdrój", "Nowy Sącz", "Jelenia Góra", "Siedlce", "Mysłowice", "Konin", "Piotrków Trybunalski", "Inowrocław", "Lubin", "Ostrów Wielkopolski",
+                        "Suwałki", "Stargard", "Pabianice", "Gorzów Wielkopolski", "Chełm", "Tarnowskie Góry", "Przemyśl", "Stalowa Wola", "Kędzierzyn-Koźle", "Piła",
+                        "Tomaszów Mazowiecki", "Zgierz", "Biała Podlaska", "Ostrowiec Świętokrzyski", "Puławy", "Racibórz", "Świętochłowice", "Krosno", "Mikołów", "Żory",
+                        "Turek", "Bełchatów", "Świdnica", "Łomża", "Leszno", "Zamość", "Żyrardów", "Ostrowiec Świętokrzyski", "Pruszków", "Stargard",
+                        "Ełk", "Mińsk Mazowiecki", "Malbork", "Mława", "Otwock", "Kołobrzeg", "Sanok", "Gniezno", "Cieszyn", "Świnoujście",
+                        "Żary", "Augustów", "Wodzisław Śląski", "Świdnik", "Czechowice-Dziedzice", "Brodnica", "Kościerzyna", "Skarżysko-Kamienna", "Łowicz", "Bochnia"
+                    ])
                     tutor.save()
                 user_obj.save()
 
