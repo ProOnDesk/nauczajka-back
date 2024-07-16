@@ -88,21 +88,6 @@ class TutorListView(generics.ListAPIView):
     filterset_class = TutorFilter
     pagination_class = CustomPagination
     
-    
-
-@extend_schema(tags=['Tutor all'])
-class TutorViewSet(viewsets.ViewSet):
-    authentication_classes = []
-    serializer_class = TutorSerializer
-    queryset = Tutor.objects.filter(user__is_confirmed=True)
-    
-    def list(self, request):
-        """
-        Get all tutors
-        """
-        serializer = self.serializer_class(self.queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
 
 @extend_schema(tags=['Tutor all'])
 class TutorDetailView(generics.RetrieveAPIView):

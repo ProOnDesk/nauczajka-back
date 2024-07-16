@@ -5,7 +5,7 @@ from asgiref.sync import sync_to_async
 from .models import ConversationMessage
 from user.models import User
 from django.conf import settings
-from rest_framework.serializers import DateTimeField
+
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -36,6 +36,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
         message = await self.save_message(self.conversation_id, body, user)
         created_at_formatted = message.created_at.astimezone(timezone.get_current_timezone()).strftime('%Y-%m-%dT%H:%M:%S.%f%z')
         
+        if hasattr(user, 'oauth2_picture') and user.oauth2_picture.view_picture and user.oauth2_picture.picture_url != "":
+            profile_image_url = user.oauth2_picture.picture_url
+        else:    
+            profile_image_url = f"{settings.BACKEND_URL}{user.profile_image.url}" if user.profile_image else None
+            
+        file_url = f"{settings.BACKEND_URL}{message.file.url}" if message.file else None
         
         await self.channel_layer.group_send(
             self.conversation_group_name,
@@ -45,12 +51,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'conversation': self.conversation_id,
                 'body': message.body,
                 'created_at': created_at_formatted,
-                'file': message.file.name,     
+                'file': file_url,
                 'created_by': {
                     'id': str(user.id),
                     'first_name': user.first_name,
                     'last_name': user.last_name,
-                    'profile_image': f"{user.profile_image.url}",
+                    'profile_image': profile_image_url,
                 }
             }
         )

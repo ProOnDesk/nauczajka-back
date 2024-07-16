@@ -1,8 +1,7 @@
-from .models import User, TokenEmailConfirmation
+from user.models import User, TokenEmailConfirmation, User_Oauth2_Picture
 from tutor.models import TutorRatings
 from rest_framework.serializers import ModelSerializer, ValidationError, CharField, SerializerMethodField
 from django.utils.translation import gettext as _
-
 
 class UserSerializer(ModelSerializer):
     """
@@ -58,8 +57,14 @@ class UserUpdateSerializer(ModelSerializer):
     profile_image = SerializerMethodField()
     
     def get_profile_image(self, obj):
+        if hasattr(obj, 'oauth2_picture') and obj.oauth2_picture.view_picture and obj.oauth2_picture.picture_url != "":
+            return obj.oauth2_picture.picture_url
+        
         if obj.profile_image:
-            return obj.profile_image.url
+            request = self.context.get('request')
+            if request is not None:
+                return request.build_absolute_uri(obj.profile_image.url)
+
         return None
     
     
@@ -96,7 +101,8 @@ class TokenEmailConfirmationSerializer(ModelSerializer):
     class Meta:
         model = TokenEmailConfirmation
         fields = ('token',)
-        
+  
+  
 class UserImageProfileSerializer(ModelSerializer):
     """
     Serializer for updating user profile image
@@ -104,6 +110,14 @@ class UserImageProfileSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = ('profile_image',)
+        
+    def get_profile_image(self, obj):
+        if obj.profile_image:
+            request = self.context.get('request')
+            if request is not None:
+                return request.build_absolute_uri(obj.profile_image.url)
+
+        return None    
         
     def update(self, instance, validated_data):
         """Update a user's profile image and return it."""
@@ -115,6 +129,7 @@ class UserImageProfileSerializer(ModelSerializer):
             user.profile_image = image
             user.save()
         return user
+
 
 class RateTutorSerializer(ModelSerializer):
     """

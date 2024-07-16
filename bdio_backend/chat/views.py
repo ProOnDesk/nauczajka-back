@@ -21,7 +21,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-
+from django.conf import settings
 
 @extend_schema(tags=['Chat'])
 class ConversationCreateAPIView(APIView):
@@ -111,7 +111,7 @@ class UploadConversationMessageFileAPIView(APIView):
     parser_classes = [MultiPartParser, FormParser]
     
     def post(self, request):
-        serializer = self.serializer_class(data=request.data, context={'user': request.user})
+        serializer = self.serializer_class(data=request.data, context={'user': request.user, 'request': request})
         
         if serializer.is_valid():
             message = serializer.save()
@@ -128,20 +128,27 @@ class UploadConversationMessageFileAPIView(APIView):
         
         created_at_formatted = message.created_at.astimezone(timezone.get_current_timezone()).strftime('%Y-%m-%dT%H:%M:%S.%f%z')
 
+        if hasattr(created_by, 'oauth2_picture') and created_by.oauth2_picture.view_picture and created_by.oauth2_picture.picture_url != "":
+            profile_image_url = created_by.oauth2_picture.picture_url
+        else:    
+            profile_image_url = f"{settings.BACKEND_URL}{created_by.profile_image.url}" if created_by.profile_image else None
+            
+        file_url = f"{settings.BACKEND_URL}{message.file.url}" if message.file else None
+        
         async_to_sync(channel_layer.group_send)(
             conversation_group_name,
             {
-                'type': 'chat_message',
-                'id': str(message.id),
-                'conversation': str(message.conversation.id),
-                'body': message.body,
-                'created_at': created_at_formatted,
-                'file': message.file.url,
-                'created_by': {
-                    'id': str(created_by.id),
-                    'first_name': created_by.first_name,
-                    'last_name': created_by.last_name,
-                    'profile_image': created_by.profile_image.url
-                }
+            'type': 'chat_message',
+            'id': str(message.id),
+            'conversation': str(message.conversation.id),
+            'body': message.body,
+            'created_at': created_at_formatted,
+            'file': file_url,
+            'created_by': {
+                'id': str(created_by.id),
+                'first_name': created_by.first_name,
+                'last_name': created_by.last_name,
+                'profile_image': profile_image_url
+            }
             }
         )
