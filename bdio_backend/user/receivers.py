@@ -15,7 +15,7 @@ def email_token_confirmation_created(sender, instance, created, **kwargs):
     """
     Send an email with a token confirmation after the user is saved
     """
-    if created and settings.IS_CUSTOM_CONFIRM_EMAIL_REQUIRED:
+    if created and settings.IS_CUSTOM_CONFIRM_EMAIL_REQUIRED and not instance.is_confirmed:
         # Generate the confirmation token
         token = generate_confirmation_token(user=instance)
         

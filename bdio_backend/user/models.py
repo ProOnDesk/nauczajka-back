@@ -70,8 +70,8 @@ class UserManager(BaseUserManager):
         """
         email_validator = EmailValidator(message='Please enter a valid email address.')
         email_validator(email)
-    
-    
+
+
 class User(AbstractBaseUser, PermissionsMixin):
     """
     Custom user model
@@ -140,3 +140,10 @@ class TokenEmailConfirmation(models.Model):
     
     def __str__(self):
         return self.token
+
+
+class User_Oauth2_Picture(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='oauth2_picture')
+    view_picture = models.BooleanField(default=True)
+    picture_url = models.URLField(default="")
+    

@@ -63,11 +63,25 @@ class TutorSerializer(ModelSerializer):
     """
     first_name = CharField(source='user.first_name') 
     last_name = CharField(source='user.last_name') 
-    profile_image = CharField(source='user.profile_image.url')
+    profile_image = SerializerMethodField()
+
 
     class Meta:
         model = Tutor 
-        fields = ('id', 'first_name', 'last_name', 'profile_image', 'description', 'price', 'avg_rating', 'skills', 'online_sessions_available', 'in_person_sessions_available', 'tutoring_location', 'individual_sessions_available', 'group_sessions_available')
+        fields = (
+            'id', 'first_name', 'last_name', 'description', 'price', 'avg_rating', 
+            'skills', 'online_sessions_available', 'in_person_sessions_available', 
+            'tutoring_location', 'individual_sessions_available', 'group_sessions_available', 
+            'profile_image'
+        )
+        
+    def get_profile_image(self, obj):
+        if obj.user.profile_image:
+            request = self.context.get('request')
+            print(request)
+            if request is not None:
+                return request.build_absolute_uri(obj.user.profile_image.url)
+        return None
 
 
 class RatingsSerializer(ModelSerializer):
@@ -86,7 +100,7 @@ class TutorDetailSerializer(ModelSerializer):
     """
     first_name = CharField(source='user.first_name') 
     last_name = CharField(source='user.last_name') 
-    profile_image = CharField(source='user.profile_image.url', read_only=True)
+    profile_image = SerializerMethodField()
     user_id = CharField(source='user.id', read_only=True)
     
     tutor_schedule_items = TutorScheduleItemsSerializer(many=True, read_only=True)
@@ -101,6 +115,13 @@ class TutorDetailSerializer(ModelSerializer):
             'avg_rating': {'read_only': True},
             'tutor_schedule_items': {'read_only': True},
         }
+        
+    def get_profile_image(self, obj):
+        if obj.user.profile_image:
+            request = self.context.get('request')
+            if request is not None:
+                return request.build_absolute_uri(obj.user.profile_image.url)
+        return None
     
     
 class TutorMeScheduleItemsSerializer(ModelSerializer):

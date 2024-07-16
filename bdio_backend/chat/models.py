@@ -28,7 +28,7 @@ class ConversationMessage(models.Model):
     id = models.UUIDField(primary_key=True, editable=False, unique=True, default=uuid.uuid4)
     conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='messages')
     body = models.TextField()
-    file = models.FileField(upload_to=get_upload_conversation_message_file_path, null=True)
+    file = models.FileField(upload_to=get_upload_conversation_message_file_path, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='messages')
     

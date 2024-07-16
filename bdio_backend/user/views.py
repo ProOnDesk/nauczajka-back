@@ -5,7 +5,6 @@ from rest_framework import generics, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
-
 from django.contrib.auth.hashers import check_password
 from django.conf import settings
 from django.utils.translation import gettext as _
@@ -14,7 +13,7 @@ from drf_spectacular.utils import extend_schema
 from django_filters.rest_framework import DjangoFilterBackend
 from user.filters import RatingsFilter
 
-from .serializers import (
+from user.serializers import (
     CreateUserSerializer,
     TokenEmailConfirmationSerializer,
     UserImageProfileSerializer,
@@ -23,7 +22,7 @@ from .serializers import (
     RatingsMeSerializer,
 )
 
-from .models import TokenEmailConfirmation, User
+from .models import TokenEmailConfirmation, User, User_Oauth2_Picture
 from tutor.models import Tutor, TutorRatings
 
 class CreateUserView(APIView):
@@ -124,8 +123,18 @@ class ProfileImageView(APIView):
         """
         Upload user profile image
         """
-        serializer = self.serializer_class(request.user, data=request.data)
+        serializer = self.serializer_class(request.user, data=request.data, context={'request': request})
         if serializer.is_valid():
+            try:
+                user_oauth_picture = User_Oauth2_Picture.objects.get(user=request.user)
+            except User_Oauth2_Picture.DoesNotExist:
+                user_oauth_picture = None
+            
+            if user_oauth_picture is not None:
+                user_oauth_picture.view_picture = False
+                user_oauth_picture.picture_url = ""
+                user_oauth_picture.save()
+            
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

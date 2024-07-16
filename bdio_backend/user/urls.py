@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import (
+from user.views import (
     CreateUserView,
     ProfileUserView,
     ConfirmUserView,
