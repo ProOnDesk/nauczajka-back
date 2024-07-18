@@ -188,7 +188,6 @@ class LogoutView(APIView):
         )
     ]
 )
-@extend_schema(tags=['OAuth2'])
 class CustomProviderAuthView(ProviderAuthView):
     """
     Custom provider authentication view to handle OAuth2 authentication.
