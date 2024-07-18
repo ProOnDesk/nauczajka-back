@@ -83,6 +83,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_tutor = models.BooleanField(default=False)
     is_confirmed = models.BooleanField(default=False)
+    is_oauth2 = models.BooleanField(default=False)
     profile_image = models.ImageField(upload_to=get_upload_user_path, blank=True, null=True, default=os_path.join('uploads', 'user', 'default.jpg'))
     created_at = models.DateTimeField(auto_now_add=True)
     objects = UserManager()
