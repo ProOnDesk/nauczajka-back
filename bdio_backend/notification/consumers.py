@@ -27,14 +27,8 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         and accepts the connection.
         """
         self.user = self.scope['user']
-        
-        self.general_group_name = 'notifications'
         self.personal_group_name = f'notifications_{self.user.id}'
-        await self.channel_layer.group_add(
-            self.general_group_name,
-            self.channel_name
-        )
-        
+
         await self.channel_layer.group_add(
             self.personal_group_name,
             self.channel_name
@@ -48,10 +42,6 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 
         This method removes the consumer from the general and personal notification groups.
         """
-        await self.channel_layer.group_discard(
-            self.general_group_name,
-            self.channel_name
-        )
         
         await self.channel_layer.group_discard(
             self.personal_group_name,
