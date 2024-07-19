@@ -3,5 +3,5 @@ from notification.views import NotificationListAPIView, NotificationIsReadAPIVie
 
 urlpatterns = [
     path('list/', NotificationListAPIView.as_view(), name='notification_list'),
-    path('update/is_read/<int:id>', NotificationIsReadAPIView.as_view(), name='notification_is_read')
+    path('is_read/<int:id>/', NotificationIsReadAPIView.as_view(), name='notification_is_read')
 ]
