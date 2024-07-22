@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from user.serializers import UserSerializer
 from django.utils.translation import gettext as _
+from drf_spectacular.utils import extend_schema_field
 
 
 class SkillsSerializer(ModelSerializer):
@@ -75,6 +76,7 @@ class TutorSerializer(ModelSerializer):
             'profile_image'
         )
         
+    @extend_schema_field(CharField(allow_null=True))
     def get_profile_image(self, obj):
         if obj.user.profile_image:
             request = self.context.get('request')
@@ -116,6 +118,7 @@ class TutorDetailSerializer(ModelSerializer):
             'tutor_schedule_items': {'read_only': True},
         }
         
+    @extend_schema_field(CharField(allow_null=True))
     def get_profile_image(self, obj):
         if obj.user.profile_image:
             request = self.context.get('request')
