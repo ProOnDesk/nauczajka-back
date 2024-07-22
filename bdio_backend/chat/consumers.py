@@ -9,17 +9,21 @@ from django.conf import settings
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        self.user = self.scope['user']
+        
+        if not self.user.is_authenticated:
+            await self.close()
+            
         self.conversation_id = str(self.scope['url_route']['kwargs']['conversation_id'])
         self.conversation_group_name = f'chat_{self.conversation_id}'
-
-        # Join conversation group
+        
         await self.channel_layer.group_add(
             self.conversation_group_name,
             self.channel_name
         )
 
         await self.accept()
-        
+
     async def disconnect(self, close_code):
         # Leave conversation group
         await self.channel_layer.group_discard(
@@ -28,10 +32,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
         
     async def receive(self, text_data):
+        user = self.user
         data = json.loads(text_data)
 
         body = data['data']['body']
-        user = self.scope['user']
+        
 
         message = await self.save_message(self.conversation_id, body, user)
         created_at_formatted = message.created_at.astimezone(timezone.get_current_timezone()).strftime('%Y-%m-%dT%H:%M:%S.%f%z')
@@ -84,3 +89,64 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.last_message = message
         
         return message
+
+
+class ChatListConsumer(AsyncWebsocketConsumer):
+    """
+    Represents a consumer for handling new updated chat functionality.
+
+    This consumer handles WebSocket connections for retrieving in real-time newest updated chat to add to chat list.
+    """
+
+    async def connect(self):
+        """
+        Called when the WebSocket is handshaking as part of the connection process.
+
+        This method adds the consumer to the personal notification group and accepts the connection.
+        """
+        self.user = self.scope['user']
+        
+        if self.user.is_authenticated:
+            self.personal_group_name = f'user_chat_list_{self.user.id}'
+
+            await self.channel_layer.group_add(
+                self.personal_group_name,
+                self.channel_name
+            )
+
+            await self.accept()
+        else:
+            await self.close()
+
+    async def disconnect(self, close_code):
+        """
+        Called when the WebSocket closes for any reason.
+
+        This method removes the consumer from the personal notification group.
+        """
+        await self.channel_layer.group_discard(
+            self.personal_group_name,
+            self.channel_name
+        )
+
+    async def receive(self, text_data):
+        """
+        Called when a WebSocket frame is received.
+
+        This method is currently empty and can be implemented to handle received WebSocket frames.
+        """
+        pass
+
+    async def send_updated_chat(self, event):
+        """
+        Sends the updated chat list to the connected WebSocket client.
+
+        This method retrieves the updated chat list and sends it to the client as a JSON string.
+        """
+        await self.send(text_data=json.dumps({
+            'id': event['id'],
+            'last_message': event['last_message'],
+            'created_at': event['created_at'],
+            'updated_at': event['updated_at'],
+            'users': event['users'],
+        }))

@@ -2,6 +2,7 @@ from rest_framework import serializers
 from chat.models import Conversation, ConversationMessage
 from user.models import User
 from django.utils.translation import gettext as _
+from drf_spectacular.utils import extend_schema_field
 from typing import Optional
 
 class UserSerializer(serializers.ModelSerializer):
@@ -9,7 +10,8 @@ class UserSerializer(serializers.ModelSerializer):
     Serializer for the user object
     """    
     profile_image = serializers.SerializerMethodField()
-
+    
+    @extend_schema_field(serializers.CharField(allow_null=True))
     def get_profile_image(self, obj):
         if hasattr(obj, 'oauth2_picture') and obj.oauth2_picture.view_picture and obj.oauth2_picture.picture_url != "":
             return obj.oauth2_picture.picture_url

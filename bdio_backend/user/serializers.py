@@ -2,6 +2,8 @@ from user.models import User, TokenEmailConfirmation, User_Oauth2_Picture
 from tutor.models import TutorRatings
 from rest_framework.serializers import ModelSerializer, ValidationError, CharField, SerializerMethodField
 from django.utils.translation import gettext as _
+from drf_spectacular.utils import extend_schema_field
+
 
 class UserSerializer(ModelSerializer):
     """
@@ -54,8 +56,10 @@ class UserUpdateSerializer(ModelSerializer):
     """
     Serializer for updating user profile
     """
+    
     profile_image = SerializerMethodField()
     
+    @extend_schema_field(CharField(allow_null=True))
     def get_profile_image(self, obj):
         if hasattr(obj, 'oauth2_picture') and obj.oauth2_picture.view_picture and obj.oauth2_picture.picture_url != "":
             return obj.oauth2_picture.picture_url
