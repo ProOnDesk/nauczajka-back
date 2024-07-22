@@ -18,7 +18,7 @@ def custom_create_user(strategy, details, backend, user=None, *args, **kwargs):
     if not fields:
         return
 
-    return {"is_new": True, "user": strategy.create_user(is_confirmed=True, is_oauth2=True **fields)}
+    return {"is_new": True, "user": strategy.create_user(is_confirmed=True, is_oauth2=True, **fields)}
 
 def get_avatar_picture(backend, strategy, details, response,
         user=None, *args, **kwargs):
