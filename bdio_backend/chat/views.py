@@ -16,12 +16,14 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
 from django.utils.translation import gettext as _
 from django.utils import timezone
+from core.utils import get_profile_image_with_ouath2
 from core.pagination import CustomPagination
 from rest_framework.parsers import MultiPartParser, FormParser
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.conf import settings
+
 
 @extend_schema(tags=['Chat'])
 class ConversationCreateAPIView(APIView):
@@ -128,10 +130,7 @@ class UploadConversationMessageFileAPIView(APIView):
         
         created_at_formatted = message.created_at.astimezone(timezone.get_current_timezone()).strftime('%Y-%m-%dT%H:%M:%S.%f%z')
 
-        if hasattr(created_by, 'oauth2_picture') and created_by.oauth2_picture.view_picture and created_by.oauth2_picture.picture_url != "":
-            profile_image_url = created_by.oauth2_picture.picture_url
-        else:    
-            profile_image_url = f"{settings.BACKEND_URL}{created_by.profile_image.url}" if created_by.profile_image else None
+        profile_image_url = get_profile_image_with_ouath2(created_by)
             
         file_url = f"{settings.BACKEND_URL}{message.file.url}" if message.file else None
         

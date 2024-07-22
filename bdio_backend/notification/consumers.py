@@ -27,6 +27,10 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         and accepts the connection.
         """
         self.user = self.scope['user']
+        
+        if not self.user.is_authenticated:
+            await self.close()
+        
         self.personal_group_name = f'notifications_{self.user.id}'
 
         await self.channel_layer.group_add(
@@ -35,6 +39,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         )
 
         await self.accept()
+
         
     async def disconnect(self, close_node):
         """
