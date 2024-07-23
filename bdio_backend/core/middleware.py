@@ -35,7 +35,7 @@ class TokenAuthMiddleware(BaseMiddleware):
     
     async def __call__(self, scope, receive, send):
         cookies = scope.get('cookies', {})
-        token = cookies.get('token')
+        token = cookies.get('access')
         user = await get_user(token) if token else None
 
         if user is None:
