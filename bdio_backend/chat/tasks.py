@@ -14,7 +14,7 @@ def send_update_chat_to_channel_task(conversation_id: str):
     channel_layer = get_channel_layer()
     
     last_message = ConversationMessage.objects.filter(conversation=conversation.id).order_by('-created_at').first()
-    created_by = last_message.created_by
+    message_created_by = last_message.created_by
     users_dict = [{
             "id": str(user.id),
             "first_name": user.first_name,
@@ -31,17 +31,17 @@ def send_update_chat_to_channel_task(conversation_id: str):
         "body": last_message.body,
         "created_at": last_message.created_at.astimezone(timezone.get_current_timezone()).strftime('%Y-%m-%dT%H:%M:%S.%f%z'),
         "created_by": {
-            "id": str(created_by.id),
-            "first_name": created_by.first_name,
-            "last_name": created_by.last_name,
-            "profile_image": get_profile_image_with_ouath2(created_by),
+            "id": str(message_created_by.id),
+            "first_name": message_created_by.first_name,
+            "last_name": message_created_by.last_name,
+            "profile_image": get_profile_image_with_ouath2(message_created_by),
             },
         "file": f"{settings.BACKEND_URL}{last_message.file.url}" if last_message.file else None
         }
 
     conversation_id = str(conversation.id)
     created_at = conversation.created_at.astimezone(timezone.get_current_timezone()).strftime('%Y-%m-%dT%H:%M:%S.%f%z')
-    
+    created_by_id = str(conversation.created_by.id)
     updated_at = conversation.updated_at.astimezone(timezone.get_current_timezone()).strftime('%Y-%m-%dT%H:%M:%S.%f%z')
     
     for user in users:
@@ -55,5 +55,6 @@ def send_update_chat_to_channel_task(conversation_id: str):
                 "created_at": created_at,
                 "updated_at": updated_at,
                 "users": users_dict,
+                "created_by": created_by_id
             }
         )

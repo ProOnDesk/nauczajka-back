@@ -15,6 +15,7 @@ class Conversation(models.Model):
     users = models.ManyToManyField(User, related_name='conversations')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='created_by_conversations')
     
     def __str__(self):
         users_emails = " ".join(f'{user.email}, ' for user in self.users.all())

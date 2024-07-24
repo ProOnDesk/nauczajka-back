@@ -70,6 +70,7 @@ class ConversationSerializer(serializers.ModelSerializer):
             'id': {'read_only': True},
             'last_message': {'read_only': True},
             'updated_at': {'read_only': True},
+            'created_by': {'read_only': True}
         }
     
     def get_last_message(self, obj) -> Optional[dict]:
@@ -80,7 +81,7 @@ class ConversationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         users_data = validated_data.pop('users')
-        conversation = Conversation.objects.create(**validated_data)
+        conversation = Conversation.objects.create(created_by=self.context['request'].user ,**validated_data)
         
         for user_data in users_data:
             user = User.objects.get(id=user_data['id'])
