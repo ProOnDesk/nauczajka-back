@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     'chat',
     'reporting',
     'notification',
+    'reservation'
 ]
 
 MIDDLEWARE = [
@@ -104,7 +105,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'bdio_backend.wsgi.application'
 
-# Daphne ASGI application
+#  ASGI application
 ASGI_APPLICATION = 'bdio_backend.asgi.application'
 
 # Channels settings
