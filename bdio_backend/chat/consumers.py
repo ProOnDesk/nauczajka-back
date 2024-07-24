@@ -149,4 +149,5 @@ class ChatListConsumer(AsyncWebsocketConsumer):
             'created_at': event['created_at'],
             'updated_at': event['updated_at'],
             'users': event['users'],
+            'created_by': event['created_by']
         }))
