@@ -77,22 +77,20 @@ class ConversationDetailAPIView(generics.ListAPIView):
         except Conversation.DoesNotExist:
             return queryset.none()
 
+
 @extend_schema(tags=['Chat'])
 class ConversationRetrieveAPIView(generics.RetrieveAPIView):
     """
-    Retrieve a conversation by user id
+    Retrieve a conversation by conversation id
     """
     serializer_class = ConversationSerializer
     permission_classes = [IsAuthenticated]
-
+    lookup_field = 'id'
     def get_queryset(self):
-        return Conversation.objects.all()
+        conversation_id = self.kwargs.get('id')
+        return Conversation.objects.filter(users=self.request.user, id=conversation_id)
     
-    def get_object(self):
-        queryset = self.get_queryset()
-        user_id = self.kwargs.get('id')
-        obj = queryset.filter(users__id=user_id).filter(users__id=user_id).distinct().first()
-        return obj
+
     
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
