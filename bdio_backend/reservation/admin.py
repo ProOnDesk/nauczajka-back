@@ -1,3 +1,4 @@
 from django.contrib import admin
+from reservation.models import TutoringReservation
 
-# Register your models here.
+admin.site.register(TutoringReservation)
