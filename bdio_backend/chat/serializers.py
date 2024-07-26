@@ -73,6 +73,29 @@ class ConversationSerializer(serializers.ModelSerializer):
             'created_by': {'read_only': True}
         }
     
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'data' in kwargs:
+            data = kwargs.get('data')
+            user_id = kwargs.get('context').get('request').user.id
+            if 'users' in data:
+                users = data['users']
+                user_id = kwargs.get('context').get('request').user.id
+                self._modify_users_field(data, user_id)
+
+    def _modify_users_field(self, data, user_id):
+        print(user_id)
+        users_list = data.get('users', [])
+        new_users_list = [{'id': user_id}]
+
+        for user in users_list:
+            if user['id'] == user_id:
+                new_users_list.insert(0, user)
+            else:
+                new_users_list.append(user)
+
+        data['users'] = new_users_list
+          
     def get_last_message(self, obj) -> Optional[dict]:
         last_message = ConversationMessage.objects.filter(conversation=obj).order_by('-created_at').first()
         if last_message:
@@ -102,24 +125,7 @@ class ConversationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(_('Użytkownicy muszą istnieć.'))
         
         return value
-    
-    def to_representation(self, instance):
-        """
-        Override the default to_representation method to insert the current user at the beginning of the users list
-        """
-        data = super().to_representation(instance)
-        users_list = data.pop('users')
 
-        new_users_list = []
-
-        for user in users_list:
-            if str(user['id']) == str(self.context['request'].user.id):
-                new_users_list.insert(0, user)
-            else:
-                new_users_list.append(user)
-
-        data['users'] = new_users_list
-        return data
 
 
 class UploadConversationMessageFileSerializer(serializers.ModelSerializer):
