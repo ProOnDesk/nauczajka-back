@@ -2,9 +2,10 @@ import json
 from django.utils import timezone
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
-from .models import ConversationMessage
+from chat.models import ConversationMessage, Conversation
 from user.models import User
 from django.conf import settings
+from channels.db import database_sync_to_async
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -32,39 +33,25 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
         
     async def receive(self, text_data):
-        user = self.user
-        data = json.loads(text_data)
-
-        body = data['data']['body']
-        
-
-        message = await self.save_message(self.conversation_id, body, user)
-        created_at_formatted = message.created_at.astimezone(timezone.get_current_timezone()).strftime('%Y-%m-%dT%H:%M:%S.%f%z')
-        
-        if hasattr(user, 'oauth2_picture') and user.oauth2_picture.view_picture and user.oauth2_picture.picture_url != "":
-            profile_image_url = user.oauth2_picture.picture_url
-        else:    
-            profile_image_url = f"{settings.BACKEND_URL}{user.profile_image.url}" if user.profile_image else None
+        user = self.scope['user']
+        try:
+            data = json.loads(text_data)
+            body = data['data']['body']
             
-        file_url = f"{settings.BACKEND_URL}{message.file.url}" if message.file else None
-        
-        await self.channel_layer.group_send(
-            self.conversation_group_name,
-            {
-                'type': 'chat_message',
-                'id': str(message.id),
-                'conversation': self.conversation_id,
-                'body': message.body,
-                'created_at': created_at_formatted,
-                'file': file_url,
-                'created_by': {
-                    'id': str(user.id),
-                    'first_name': user.first_name,
-                    'last_name': user.last_name,
-                    'profile_image': profile_image_url,
-                }
-            }
-        )
+            conversation = await database_sync_to_async(Conversation.objects.get)(id=self.conversation_id)
+            
+            await database_sync_to_async(ConversationMessage.objects.create)(
+                conversation=conversation,
+                body=body,
+                created_by=user
+            )
+        except json.JSONDecodeError:
+            print("Error decoding JSON")
+        except Conversation.DoesNotExist:
+            print("Conversation does not exist")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
 
     async def chat_message(self, event):
         id = event['id']
@@ -82,13 +69,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'created_at': created_at,
             'created_by': created_by,
         }))
-
-    @sync_to_async
-    def save_message(self, conversation_id, body, created_by):
-        message = ConversationMessage.objects.create(conversation_id=conversation_id, body=body, created_by=created_by)
-        self.last_message = message
-        
-        return message
 
 
 class ChatListConsumer(AsyncWebsocketConsumer):

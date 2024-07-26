@@ -144,8 +144,6 @@ class UploadConversationMessageFileSerializer(serializers.ModelSerializer):
         Create a conversation
         """
         user = self.context['user']
-        if validated_data.get('file', None):
-            return serializers.ValidationError(_("File not found"))
         body_file_name = validated_data['file'].name
         
         conversation_message = ConversationMessage.objects.create(

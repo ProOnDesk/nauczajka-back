@@ -6,9 +6,14 @@ from asgiref.sync import async_to_sync
 from django.utils import timezone
 from django.conf import settings
 from core.utils import get_profile_image_with_ouath2
-from chat.tasks import send_update_chat_to_channel_task
+from chat.tasks import send_update_chat_to_channel_task, send_message_task
 
 @receiver(post_save, sender=ConversationMessage)
 def send_update_chat_to_channel(sender, instance, created, **kwargs):
     if created:
         send_update_chat_to_channel_task.delay(str(instance.conversation.id), str(instance.created_by.id))
+        
+@receiver(post_save, sender=ConversationMessage)
+def send_message(sender, instance, created, **kwargs):
+    if created:
+        send_message_task(str(instance.id), f"chat_{instance.conversation.id}")

@@ -5,7 +5,6 @@ from asgiref.sync import async_to_sync
 from django.utils import timezone
 from django.conf import settings
 from core.utils import get_profile_image_with_ouath2
-from uuid import UUID
 
 @shared_task
 def send_update_chat_to_channel_task(conversation_id: str, my_user_id: str):
@@ -14,7 +13,7 @@ def send_update_chat_to_channel_task(conversation_id: str, my_user_id: str):
     my_user = conversation.users.all().filter(id=my_user_id)
     user_without = conversation.users.all().exclude(id=my_user_id)
     users = list(my_user) + list(user_without)
-    print(users)
+    
     channel_layer = get_channel_layer()
     
     last_message = ConversationMessage.objects.filter(conversation=conversation.id).order_by('-created_at').first()
@@ -62,3 +61,36 @@ def send_update_chat_to_channel_task(conversation_id: str, my_user_id: str):
                 "created_by": created_by_id
             }
         )
+        
+
+def send_message_task(conversation_message_id: str, conversation_group_name: str):
+    message =  ConversationMessage.objects.get(id=conversation_message_id)
+    user = message.created_by
+    created_at_formatted = message.created_at.astimezone(timezone.get_current_timezone()).strftime('%Y-%m-%dT%H:%M:%S.%f%z')
+    
+    if (hasattr(user, 'oauth2_picture')) and user.oauth2_picture.view_picture and user.oauth2_picture.picture_url != "":
+        profile_image_url = user.oauth2_picture.picture_url
+    else:    
+        profile_image_url = f"{settings.BACKEND_URL}{user.profile_image.url}" if user.profile_image else None
+        
+    file_url = f"{settings.BACKEND_URL}{message.file.url}" if message.file else None
+    
+    channel_layer = get_channel_layer()
+    
+    async_to_sync(channel_layer.group_send)(
+        conversation_group_name,
+        {
+            'type': 'chat_message',
+            'id': str(message.id),
+            'conversation': str(message.conversation.id),
+            'body': message.body,
+            'created_at': created_at_formatted,
+            'file': file_url,
+            'created_by': {
+                'id': str(user.id),
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'profile_image': profile_image_url,
+            }
+        }
+    )
