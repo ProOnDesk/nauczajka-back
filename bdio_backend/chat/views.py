@@ -72,7 +72,7 @@ class ConversationDetailAPIView(generics.ListAPIView):
             conversation = Conversation.objects.get(id=conversation_id)
             if self.request.user not in conversation.users.all():
                 return queryset.none()
-            return queryset.filter(conversation_id=conversation_id).order_by('created_at')
+            return queryset.filter(conversation_id=conversation_id).order_by('-created_at')
         except Conversation.DoesNotExist:
             return queryset.none()
 
