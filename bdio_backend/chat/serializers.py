@@ -81,6 +81,9 @@ class ConversationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         users_data = validated_data.pop('users')
+        conversation = Conversation.objects.filter(users__id=users_data[0]['id']).filter(users__id=users_data[1]['id']).first()
+        if conversation:
+            return conversation
         conversation = Conversation.objects.create(created_by=self.context['request'].user ,**validated_data)
         
         for user_data in users_data:
@@ -97,9 +100,6 @@ class ConversationSerializer(serializers.ModelSerializer):
         
         if not User.objects.filter(id=value[0]['id']).exists() or not User.objects.filter(id=value[1]['id']).exists():
             raise serializers.ValidationError(_('Użytkownicy muszą istnieć.'))
-        
-        if Conversation.objects.filter(users__id=value[0]['id']).filter(users__id=value[1]['id']).exists():
-            raise serializers.ValidationError(_('Rozmowa już istnieje.'))
         
         return value
     
@@ -144,6 +144,8 @@ class UploadConversationMessageFileSerializer(serializers.ModelSerializer):
         Create a conversation
         """
         user = self.context['user']
+        if validated_data.get('file', None):
+            return serializers.ValidationError(_("File not found"))
         body_file_name = validated_data['file'].name
         
         conversation_message = ConversationMessage.objects.create(

@@ -5,12 +5,16 @@ from asgiref.sync import async_to_sync
 from django.utils import timezone
 from django.conf import settings
 from core.utils import get_profile_image_with_ouath2
+from uuid import UUID
 
 @shared_task
-def send_update_chat_to_channel_task(conversation_id: str):
+def send_update_chat_to_channel_task(conversation_id: str, my_user_id: str):
     
     conversation = Conversation.objects.get(id=conversation_id)
-    users = conversation.users.all()
+    my_user = conversation.users.all().filter(id=my_user_id)
+    user_without = conversation.users.all().exclude(id=my_user_id)
+    users = list(my_user) + list(user_without)
+    print(users)
     channel_layer = get_channel_layer()
     
     last_message = ConversationMessage.objects.filter(conversation=conversation.id).order_by('-created_at').first()

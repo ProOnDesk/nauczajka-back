@@ -11,4 +11,4 @@ from chat.tasks import send_update_chat_to_channel_task
 @receiver(post_save, sender=ConversationMessage)
 def send_update_chat_to_channel(sender, instance, created, **kwargs):
     if created:
-        send_update_chat_to_channel_task.delay(str(instance.conversation.id))
+        send_update_chat_to_channel_task.delay(str(instance.conversation.id), str(instance.created_by.id))

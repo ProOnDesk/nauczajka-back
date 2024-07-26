@@ -34,9 +34,7 @@ class ConversationCreateAPIView(APIView):
     serializer_class = ConversationSerializer
     
     def post(self, request):
-        user_id = request.user.id
         data = request.data
-        data['users'].append({'id': user_id})
         serializer = self.serializer_class(data=data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
@@ -55,6 +53,7 @@ class ConversationListAPIView(ListAPIView):
 
     def get_queryset(self):
         return self.request.user.conversations.order_by('-updated_at')
+    
 
 
 @extend_schema(tags=['Chat'])
@@ -98,6 +97,7 @@ class ConversationRetrieveAPIView(generics.RetrieveAPIView):
             return Response({'detail': _('Brak konwersacji')}, status=status.HTTP_404_NOT_FOUND)
         
         serializer = self.get_serializer(instance)
+
         return Response(serializer.data)
      
 
