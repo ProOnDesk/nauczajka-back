@@ -115,37 +115,7 @@ class UploadConversationMessageFileAPIView(APIView):
         
         if serializer.is_valid():
             message = serializer.save()
-            self.broadcast_to_channel(message)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    def broadcast_to_channel(self, message):
-        channel_layer = get_channel_layer()
-        
-        conversation_group_name = f'chat_{message.conversation.id}'
-        created_by = message.created_by
-        
-        created_at_formatted = message.created_at.astimezone(timezone.get_current_timezone()).strftime('%Y-%m-%dT%H:%M:%S.%f%z')
-
-        profile_image_url = get_profile_image_with_ouath2(created_by)
-            
-        file_url = f"{settings.BACKEND_URL}{message.file.url}" if message.file else None
-        
-        async_to_sync(channel_layer.group_send)(
-            conversation_group_name,
-            {
-            'type': 'chat_message',
-            'id': str(message.id),
-            'conversation': str(message.conversation.id),
-            'body': message.body,
-            'created_at': created_at_formatted,
-            'file': file_url,
-            'created_by': {
-                'id': str(created_by.id),
-                'first_name': created_by.first_name,
-                'last_name': created_by.last_name,
-                'profile_image': profile_image_url
-            }
-            }
-        )
