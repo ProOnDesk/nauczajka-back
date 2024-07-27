@@ -4,7 +4,7 @@ from tutor.serializers import TutorScheduleItemsSerializer
 from django.utils.translation import gettext as _
 
 
-class CreateReservationSerializer(serializers.ModelSerializer):
+class ReservationSerializer(serializers.ModelSerializer):
     
     
     class Meta:
@@ -14,7 +14,8 @@ class CreateReservationSerializer(serializers.ModelSerializer):
             'id': {'read_only': True},
             'user': {'read_only': True},
             'tutor': {'read_only': True},
-            'is_confirmed': {'read_only': True}
+            'is_confirmed': {'read_only': True},
+            'created_at': {'read_only': True}
         }
         
     def validate(self, data):
@@ -36,6 +37,26 @@ class CreateReservationSerializer(serializers.ModelSerializer):
         
         user = self.context['user']
         tutor = validated_data['schedule_item'].tutor
+
+        if user.is_tutor and user.tutor == tutor:
+            raise serializers.ValidationError(_("You cannot make a reservation for yourself"))
+        
         tutoring = TutoringReservation.objects.create(user=user, tutor=tutor, **validated_data)
         return tutoring
         
+class ReservationReadOnlySerializer(serializers.ModelSerializer):
+    
+    
+    class Meta:
+        model = TutoringReservation
+        fields = '__all__'
+        extra_kwargs = {
+            'id': {'read_only': True},
+            'user': {'read_only': True},
+            'tutor': {'read_only': True},
+            'created_at': {'read_only': True},
+            'schedule_item': {'read_only': True},
+            'is_confirmed': {'read_only': True}
+        }
+        
+
