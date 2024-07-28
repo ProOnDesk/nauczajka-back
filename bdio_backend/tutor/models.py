@@ -40,6 +40,7 @@ class TutorScheduleItems(models.Model):
     tutor = models.ForeignKey(Tutor, on_delete=models.CASCADE, related_name='tutor_schedule_items')
     start_time = models.DateTimeField(help_text="Format: YYYY-MM-DD HH:MM:SS")
     end_time = models.DateTimeField(help_text="Format: YYYY-MM-DD HH:MM:SS")
+    is_reserved = models.BooleanField(default=False)
     
     def __str__(self):
         return f"ScheduleItem - {self.tutor.user.email} - {self.start_time} - {self.end_time}"

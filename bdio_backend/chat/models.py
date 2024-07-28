@@ -21,7 +21,7 @@ class Conversation(models.Model):
         users_emails = " ".join(f'{user.email}, ' for user in self.users.all())
         return f'{self.id} - {users_emails}'
 
-            
+   
 class ConversationMessage(models.Model):
     """
     Conversation message model

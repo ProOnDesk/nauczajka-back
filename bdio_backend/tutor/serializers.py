@@ -55,7 +55,7 @@ class TutorScheduleItemsSerializer(ModelSerializer):
     """
     class Meta:
         model = TutorScheduleItems
-        fields = ('start_time', 'end_time')
+        fields = ('id', 'start_time', 'end_time', 'is_reserved')
 
 
 class TutorSerializer(ModelSerializer):
