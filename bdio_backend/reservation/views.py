@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
@@ -8,9 +9,10 @@ from reservation.serializers import (
     ReservationReadOnlySerializer
 ) 
 from reservation.models import TutoringReservation
+from reservation.filters import ReservationFilter
 from drf_spectacular.utils import extend_schema
 from tutor.permissions import IsTutor
-
+from django_filters.rest_framework import DjangoFilterBackend
 
 @extend_schema(tags=['Reservation'])
 class ReservationCreateAPIView(APIView):
@@ -28,27 +30,28 @@ class ReservationCreateAPIView(APIView):
 
 
 @extend_schema(tags=['Reservation'])
-class ReservationTutorMeAPIView(APIView):
+class ReservationTutorMeAPIView(ListAPIView):
     serializer_class = ReservationSerializer
     permission_classes = [IsAuthenticated, IsTutor]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ReservationFilter
     
-    def get(self, request):
-        reservations = TutoringReservation.objects.filter(tutor=request.user.tutor)
-        serializer = self.serializer_class(reservations, many=True)
+    def get_queryset(self):
+        return TutoringReservation.objects.filter(tutor=self.request.user.tutor)
+    
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
     
     
 @extend_schema(tags=['Reservation'])
-class ReservationUserMeAPIView(APIView):
+class ReservationUserMeAPIView(ListAPIView):
     serializer_class = ReservationSerializer
     permission_classes = [IsAuthenticated, IsTutor]
-    
-    def get(self, request):
-        reservations = TutoringReservation.objects.filter(user=request.user)
-        serializer = self.serializer_class(reservations, many=True)
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ReservationFilter
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def get_queryset(self):
+        return TutoringReservation.objects.filter(user=self.request.user)
+    
 
 
 @extend_schema(tags=['Reservation'])
