@@ -86,5 +86,5 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         needs to be sent. It sends the number of unread notifications to the connected client.
         """
         await self.send(text_data=json.dumps({
-            'count': event['count']
+            'unread_notification_count': event['unread_notification_count']
         }))
