@@ -6,11 +6,13 @@ from notification.models import UserNotification
 from notification.utils import send_notification
 from rest_framework.response import Response
 from user.models import User
+from core.pagination import CustomPagination
 
 
 class NotificationListAPIView(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = UserNotificationSerializer
+    pagination_class = CustomPagination
     
     def get_queryset(self):
         return UserNotification.objects.filter(user=self.request.user).order_by('-created_at')
