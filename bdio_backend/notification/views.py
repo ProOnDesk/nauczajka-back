@@ -17,11 +17,10 @@ class NotificationListAPIView(ListAPIView):
     def get_queryset(self):
         return UserNotification.objects.filter(user=self.request.user).order_by('-created_at')
     
-    def get(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializer = self.serializer_class(queryset, many=True)
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
         send_notification(users=self.request.user, message="Wlasnie poprosiles o historie twoich powiadomien :)")
-        return Response(serializer.data)
+        return response
     
     
 class NotificationIsReadAPIView(UpdateAPIView):
