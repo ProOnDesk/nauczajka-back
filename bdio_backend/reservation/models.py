@@ -8,7 +8,7 @@ class TutoringReservation(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reservations')
     tutor = models.ForeignKey(Tutor, on_delete=models.CASCADE, related_name='tutor_reservations')
     schedule_item = models.ForeignKey(TutorScheduleItems, related_name='schedule_reservations', on_delete=models.CASCADE)
-    is_confirmed = models.BooleanField(default=False)
+    is_confirmed = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
     
