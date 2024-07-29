@@ -72,6 +72,9 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         It sends the notification message to the connected client.
         """
         await self.send(text_data=json.dumps({
-            'message': event['message']
+            'id': event['id'],
+            'notification': event['notification'],
+            'created_at': event['created_at'],
+            'is_read': event['is_read']
         }))
         

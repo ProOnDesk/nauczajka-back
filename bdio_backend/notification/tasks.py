@@ -21,7 +21,7 @@ def send_notification_task(user_ids, message):
             {
                 'type': 'send_notification',
                 'id': notification_user.notification.id,
-                'message': notification_user.notification.message,
+                'notification': {'message': notification_user.notification.message},
                 'created_at': notification_user.created_at.astimezone(timezone.get_current_timezone()).strftime('%Y-%m-%dT%H:%M:%S.%f%z'),
                 'is_read': notification_user.is_read
             }
