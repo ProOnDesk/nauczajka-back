@@ -13,6 +13,6 @@ def send_update_chat_to_channel(sender, instance, created, **kwargs):
         f'notifications_{user.id}',
         {
             'type': 'get_unread_notification_count',
-            'count': count
+            'unread_notification_count': count
         }
     )
