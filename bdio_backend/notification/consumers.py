@@ -78,3 +78,13 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             'is_read': event['is_read']
         }))
         
+    async def get_unread_notification_count(self, event):
+        """
+        Sends the number of unread notifications to the connected WebSocket client.
+
+        This method is called by the channel layer when the number of unread notifications
+        needs to be sent. It sends the number of unread notifications to the connected client.
+        """
+        await self.send(text_data=json.dumps({
+            'count': event['count']
+        }))

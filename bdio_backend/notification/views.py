@@ -19,7 +19,7 @@ class NotificationListAPIView(ListAPIView):
     
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
-        # send_notification(users=self.request.user, message="Wlasnie poprosiles o historie twoich powiadomien :)")
+        send_notification(users=self.request.user, message="Wlasnie poprosiles o historie twoich powiadomien :)")
         return response
     
     
