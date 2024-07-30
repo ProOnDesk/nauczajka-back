@@ -80,7 +80,6 @@ class TutorSerializer(ModelSerializer):
     def get_profile_image(self, obj):
         if obj.user.profile_image:
             request = self.context.get('request')
-            print(request)
             if request is not None:
                 return request.build_absolute_uri(obj.user.profile_image.url)
         return None

@@ -84,7 +84,6 @@ class ConversationSerializer(serializers.ModelSerializer):
                 self._modify_users_field(data, user_id)
 
     def _modify_users_field(self, data, user_id):
-        print(user_id)
         users_list = data.get('users', [])
         new_users_list = [{'id': user_id}]
 

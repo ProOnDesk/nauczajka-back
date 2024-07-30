@@ -71,7 +71,8 @@ INSTALLED_APPS = [
     'chat',
     'reporting',
     'notification',
-    'reservation'
+    'reservation',
+    'announcement',
 ]
 
 MIDDLEWARE = [
