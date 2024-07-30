@@ -1,3 +1,5 @@
 from django.contrib import admin
+from announcement.models import Tag, Announcement
 
-# Register your models here.
+admin.site.register(Tag)
+admin.site.register(Announcement)
