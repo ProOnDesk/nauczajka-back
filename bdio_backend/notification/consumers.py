@@ -3,7 +3,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from django.utils import timezone
 from asgiref.sync import sync_to_async
 from notification.models import Notification
-
+from notification.utils import send_unread_notification_count_to_channel
 
 class NotificationConsumer(AsyncWebsocketConsumer):
     """
@@ -54,15 +54,17 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         )
         
     async def receive(self, text_data):
-        """
-        Called when a WebSocket frame is received.
-        
-        No logic is needed here because notifications are directly handled 
-        using Django's get_channel_layer and are sent directly if needed, 
-        without using WebSockets directly.
-        """
-        
-        pass
+        try:
+            data = json.loads(text_data)
+            send_back = data['data']['send_back_unread_notification_count']
+            if send_back:
+                await sync_to_async(send_unread_notification_count_to_channel)(self.user)
+            
+        except json.JSONDecodeError:
+            print("Error decoding JSON")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
     
     async def send_notification(self, event):
         """

@@ -19,3 +19,14 @@ def send_notification(users, message):
     user_ids = [str(user.id) for user in users]
 
     send_notification_task.delay(user_ids, message)
+
+def send_unread_notification_count_to_channel(user):
+    count = UserNotification.objects.filter(user=user, is_read=False).count()
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        f'notifications_{user.id}',
+        {
+            'type': 'get_unread_notification_count',
+            'unread_notification_count': count
+        }
+    )
