@@ -10,7 +10,7 @@ from tutor.permissions import IsTutor
 @extend_schema(tags=['Announcement'])
 class AnnouncementListAPIView(generics.ListAPIView):
     serializer_class = AnnouncementSerializer
-    queryset = Announcement.objects.all()
+    queryset = Announcement.objects.all().order_by('-created_at')
     pagination_class = CustomPagination    
     
     

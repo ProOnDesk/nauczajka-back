@@ -20,7 +20,6 @@ class TutorAnnouncementSerializer(serializers.ModelSerializer):
     def get_profile_image(self, obj):
         if obj.user.profile_image:
             request = self.context.get('request')
-            print(request)
             if request is not None:
                 return request.build_absolute_uri(obj.user.profile_image.url)
         return None
@@ -72,7 +71,6 @@ class AnnouncementSerializer(serializers.ModelSerializer):
         announcement = Announcement.objects.create(tutor=tutor, **validated_data)
         
         for tag_data in tags_data:
-            print(tag_data)
             announcement.tags.add(tag_data['tag_instance'])
         
         return announcement
