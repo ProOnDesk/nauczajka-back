@@ -5,14 +5,14 @@ import uuid
 
 class Issue(models.Model):
     CATEGORY_CHOICES = [
-        ('violation', 'Naruszenie Regulaminu'),
-        ('technical_issue', 'Problem Techniczny'),
-        ('help_request', 'Prośba o Pomoc'),
+        ('violation', 'Naruszenie regulaminu'),
+        ('technical_issue', 'Problem techniczny'),
+        ('help_request', 'Prośba o pomoc'),
     ]
     
     STATUS_CHOICES = [
         ('new', 'Nowe'),
-        ('in_progress', 'W Trakcie'),
+        ('in_progress', 'W trakcie'),
         ('resolved', 'Rozwiązane'),
         ('closed', 'Zamknięte'),
     ]
