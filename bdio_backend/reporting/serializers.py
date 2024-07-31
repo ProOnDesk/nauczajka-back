@@ -6,7 +6,6 @@ class IssueSerializer(serializers.ModelSerializer):
     Issue Serializer
     """
     
-    
     class Meta:
         model = Issue
         fields = "__all__"
@@ -15,7 +14,7 @@ class IssueSerializer(serializers.ModelSerializer):
             'created_at': {'read_only': True},
             'updated_at': {'read_only': True},
             'reported_by': {'read_only': True},
-            'status': {'read_only': True},
+            'status': {'read_only': True}
         }
         
     def create(self, validated_data):
@@ -26,7 +25,16 @@ class IssueSerializer(serializers.ModelSerializer):
         issue = Issue.objects.create(reported_by=user, **validated_data)
         
         return issue    
-
+    
+    def to_representation(self, instance):
+        """
+        Override to_representation to add human-readable category and status
+        """
+        representation = super().to_representation(instance)
+        representation['category'] = instance.get_category_display()
+        representation['status'] = instance.get_status_display()
+        return representation
+    
 class RespondSerializer(serializers.ModelSerializer):
     """
     Respond Serialzer
@@ -61,3 +69,11 @@ class IssueDetailSerializer(serializers.ModelSerializer):
             'status': {'read_only': True},
             'responds': {'read_only': True},
         }
+    def to_representation(self, instance):
+        """
+        Override to_representation to add human-readable category and status
+        """
+        representation = super().to_representation(instance)
+        representation['category'] = instance.get_category_display()
+        representation['status'] = instance.get_status_display()
+        return representation
