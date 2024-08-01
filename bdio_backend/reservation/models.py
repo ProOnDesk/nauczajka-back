@@ -18,7 +18,7 @@ class TutoringReservation(models.Model):
     def __str__(self):
         return f'Reservation by {self.user.first_name} {self.user.last_name} with {self.tutor.user.first_name} {self.tutor.user.last_name}'
     
-    def clean(self):
+    def clean(self, *args, **kwargs):
         if TutoringReservation.objects.filter(user=self.user, schedule_item=self.schedule_item).exists():
             raise ValidationError('This schedule item is already reserved for this user.')
         super().clean(*args, **kwargs)

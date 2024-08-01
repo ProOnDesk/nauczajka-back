@@ -2,8 +2,28 @@ from rest_framework import serializers
 from reservation.models import TutoringReservation
 from tutor.serializers import TutorScheduleItemsSerializer
 from django.utils.translation import gettext as _
+from tutor.serializers import TutorMeScheduleItemsSerializer
+from tutor.models import Tutor
+from user.models import User
+
+class UserSerializer(serializers.ModelSerializer):
+    
+    
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name')
+        
+        
+class TutorSerializer(serializers.ModelSerializer):
+    first_name = serializers.CharField(source='user.first_name') 
+    last_name = serializers.CharField(source='user.last_name') 
 
 
+    class Meta:
+        model = Tutor
+        fields = ('first_name', 'last_name')
+        
+        
 class ReservationSerializer(serializers.ModelSerializer):
     
     
@@ -60,3 +80,22 @@ class ReservationReadOnlySerializer(serializers.ModelSerializer):
         }
         
 
+class TutorReservationSerializer(serializers.ModelSerializer):
+
+    schedule_item = TutorMeScheduleItemsSerializer()
+    user = UserSerializer()
+    
+    
+    class Meta:
+        model = TutoringReservation
+        fields = '__all__'
+
+
+class UserReservationSerializer(serializers.ModelSerializer):
+
+    schedule_item = TutorMeScheduleItemsSerializer()
+    tutor = TutorSerializer()
+    
+    class Meta:
+        model = TutoringReservation
+        fields = '__all__'
