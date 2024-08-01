@@ -134,7 +134,7 @@ class TutorMeScheduleItemsSerializer(ModelSerializer):
     
     class Meta:
         model = TutorScheduleItems
-        fields = ('id', 'start_time', 'end_time')
+        fields = ('id', 'start_time', 'end_time', 'is_reserved')
         read_only_fields = ('id',)
 
     def validate(self, data):
