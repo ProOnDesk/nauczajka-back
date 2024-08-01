@@ -6,6 +6,8 @@ from reservation.views import (
     ReservationTutorMeConfirmAPIView,
 )
 
+app_name = 'reservation'
+
 urlpatterns = [
     path('reservation/', ReservationCreateAPIView.as_view(), name='reservation'),
     path('reservation/tutor/me/', ReservationTutorMeAPIView.as_view(), name='reservation_tutor_me'),

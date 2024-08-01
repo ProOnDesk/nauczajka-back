@@ -2,6 +2,7 @@ from tutor.views import (
     TutorSkillsView,
     SkillsListView,
     TutorListView,
+    TutorViewSet,
     TutorDetailView,
     DeleteTutorMeScheduleItemView,
     RetrieveCreateTutorMeScheduleItemsView,
@@ -10,6 +11,10 @@ from tutor.views import (
     TutorScheduleItemView
 )
 from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+router.register(r'all', TutorViewSet, basename='tutors')
 
 app_name = 'tutor'
 
@@ -23,4 +28,6 @@ urlpatterns = [
     path('schedule/<int:tutor_id>/', TutorScheduleItemView.as_view(), name='tutor_schedule-item'),
     path('search/', TutorListView.as_view(), name='tutor_search'),
     path('me/', TutorMeView.as_view(), name='me'),
+    path('', include(router.urls)),
+
 ]
