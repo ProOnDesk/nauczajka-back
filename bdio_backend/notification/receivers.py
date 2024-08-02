@@ -17,7 +17,7 @@ def send_unread_notification(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def create_user_chat_notification(sender, instance, created, **kwargs):
     if created:
-        notification = Notification.objects.create(message="")
-        user_notification = UserNotification.objects.create(user=instance, notification=notification)
+        notification = Notification.objects.create(message="Masz 0 nieprzeczytanych wiadomości")
+        user_notification = UserNotification.objects.create(user=instance, notification=notification, is_read=True)
         UserChatNotification.objects.create(user_notification=user_notification, user=instance)
         user_notification.save()
