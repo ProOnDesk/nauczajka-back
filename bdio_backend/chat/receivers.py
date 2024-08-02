@@ -37,7 +37,7 @@ def update_read_status(sender, instance, created, **kwargs):
 
                     read_status.is_read = False
                     read_status.save()
-                    count = ConversationReadStatus.objects.filter(user=user).count()
+                    count = ConversationReadStatus.objects.filter(user=user, is_read=False).count()
                     if count > 0:
                         print(count)
                         user_chat_notification, created = UserChatNotification.objects.get_or_create(user=user)
