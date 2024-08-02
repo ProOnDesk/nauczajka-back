@@ -6,7 +6,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from reservation.serializers import (
     ReservationSerializer,
-    ReservationReadOnlySerializer
+    ReservationReadOnlySerializer,
+    TutorReservationSerializer,
+    UserReservationSerializer
 ) 
 from reservation.models import TutoringReservation
 from reservation.filters import ReservationFilter
@@ -31,7 +33,7 @@ class ReservationCreateAPIView(APIView):
 
 @extend_schema(tags=['Reservation'])
 class ReservationTutorMeAPIView(ListAPIView):
-    serializer_class = ReservationSerializer
+    serializer_class = TutorReservationSerializer
     permission_classes = [IsAuthenticated, IsTutor]
     filter_backends = [DjangoFilterBackend]
     filterset_class = ReservationFilter
@@ -44,8 +46,8 @@ class ReservationTutorMeAPIView(ListAPIView):
     
 @extend_schema(tags=['Reservation'])
 class ReservationUserMeAPIView(ListAPIView):
-    serializer_class = ReservationSerializer
-    permission_classes = [IsAuthenticated, IsTutor]
+    serializer_class = UserReservationSerializer
+    permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
     filterset_class = ReservationFilter
 

@@ -35,3 +35,20 @@ class ConversationMessage(models.Model):
     
     def __str__(self):
         return f'ID message: {self.id} from ID conversation: {self.conversation}'
+
+
+class ConversationReadStatus(models.Model):
+    """
+    Model to track read status of conversations for each user
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='read_statuses')
+    is_read = models.BooleanField(default=False)
+    read_at = models.DateTimeField(null=True, blank=True)
+    is_connected_to_chat = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('user', 'conversation')
+    
+    def __str__(self):
+        return f'User: {self.user.email} - Conversation ID: {self.conversation.id} - Read: {self.is_read}'

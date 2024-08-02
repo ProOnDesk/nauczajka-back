@@ -2,7 +2,7 @@ import json
 from django.utils import timezone
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
-from chat.models import ConversationMessage, Conversation
+from chat.models import ConversationMessage, Conversation, ConversationReadStatus
 from user.models import User
 from django.conf import settings
 from channels.db import database_sync_to_async
@@ -24,6 +24,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
 
         await self.accept()
+        
+        self.crs, created = await database_sync_to_async(ConversationReadStatus.objects.get_or_create)(user=self.user, conversation_id=self.conversation_id)
+        self.crs.is_read = True
+        self.crs.is_connected_to_chat = True
+        await database_sync_to_async(self.crs.save)()
 
     async def disconnect(self, close_code):
         # Leave conversation group
@@ -32,6 +37,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
         
+        self.crs.is_read = True
+        self.crs.is_connected_to_chat = False
+        await database_sync_to_async(self.crs.save)()
+
     async def receive(self, text_data):
         user = self.scope['user']
         try:
@@ -45,6 +54,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 body=body,
                 created_by=user
             )
+            await database_sync_to_async(conversation.save)()
         except json.JSONDecodeError:
             print("Error decoding JSON")
         except Conversation.DoesNotExist:
