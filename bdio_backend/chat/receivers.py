@@ -37,7 +37,7 @@ def update_read_status(sender, instance, created, **kwargs):
 
                     read_status.is_read = False
                     read_status.save()
-                    count = ConversationReadStatus.objects.filter(user=user).count()
+                    count = ConversationReadStatus.objects.filter(user=user, is_read=False).count()
                     if count > 0:
                         print(count)
                         user_chat_notification, created = UserChatNotification.objects.get_or_create(user=user)
@@ -45,7 +45,11 @@ def update_read_status(sender, instance, created, **kwargs):
                         if not created:
                             user_notification = user_chat_notification.user_notification
                             notification = user_notification.notification
-                            notification.message = f'Masz {count} nieprzeczytanych wiadomości od różnych osób'
+                            if count == 1:
+                                notification.message = f'Masz {count} nieprzeczytaną wiadomość'
+                            else:
+                                notification.message = f'Masz {count} nieprzeczytanych wiadomości od różnych osób'
+
                             notification.save()
                             user_notification.delete()
                             user_notification = UserNotification.objects.create(user=user, notification=notification)
