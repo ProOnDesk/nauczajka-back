@@ -5,23 +5,47 @@ from django.utils.translation import gettext as _
 from tutor.serializers import TutorMeScheduleItemsSerializer
 from tutor.models import Tutor
 from user.models import User
+from drf_spectacular.utils import extend_schema_field
 
 class UserSerializer(serializers.ModelSerializer):
-    
+    @extend_schema_field(serializers.CharField(allow_null=True))
+    def get_profile_image(self, obj):
+        if hasattr(obj, 'oauth2_picture') and obj.oauth2_picture.view_picture and obj.oauth2_picture.picture_url != "":
+            return obj.oauth2_picture.picture_url
+        
+        if obj.profile_image:
+            request = self.context.get('request')
+            if request is not None:
+                return request.build_absolute_uri(obj.profile_image.url)
+
+        return None
     
     class Meta:
         model = User
-        fields = ('first_name', 'last_name')
+        fields = ('first_name', 'last_name', 'id', 'profile_image')
         
         
 class TutorSerializer(serializers.ModelSerializer):
+
     first_name = serializers.CharField(source='user.first_name') 
     last_name = serializers.CharField(source='user.last_name') 
+    profile_image = serializers.SerializerMethodField()
 
 
     class Meta:
-        model = Tutor
-        fields = ('first_name', 'last_name')
+        model = Tutor 
+        fields = (
+            'id', 'first_name', 'last_name', 'profile_image'
+        )
+
+    @extend_schema_field(serializers.CharField(allow_null=True))
+    def get_profile_image(self, obj):
+        if obj.user.profile_image:
+            request = self.context.get('request')
+            if request is not None:
+                return request.build_absolute_uri(obj.user.profile_image.url)
+            
+        return None
         
         
 class ReservationSerializer(serializers.ModelSerializer):
