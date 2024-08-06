@@ -19,8 +19,9 @@ from user.serializers import (
     UserImageProfileSerializer,
     UserUpdateSerializer,
     RateTutorSerializer,
-    RatingsMeSerializer,
+    RatingsMeSerializer
 )
+from tutor.serializers import RatingsSerializer
 
 from .models import TokenEmailConfirmation, User, User_Oauth2_Picture
 from tutor.models import Tutor, TutorRatings
@@ -254,7 +255,7 @@ class BestRatingsView(generics.ListAPIView):
     """
     Get best ratings
     """
-    serializer_class = RatingsMeSerializer
+    serializer_class = RatingsSerializer
     queryset = TutorRatings.objects.all().order_by('-rating')
     filter_backends = [DjangoFilterBackend]
     filterset_class = RatingsFilter
