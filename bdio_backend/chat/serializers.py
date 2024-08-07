@@ -10,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
     Serializer for the user object
     """    
     profile_image = serializers.SerializerMethodField()
-    
+
     @extend_schema_field(serializers.CharField(allow_null=True))
     def get_profile_image(self, obj):
         if hasattr(obj, 'oauth2_picture') and obj.oauth2_picture.view_picture and obj.oauth2_picture.picture_url != "":
@@ -23,6 +23,7 @@ class UserSerializer(serializers.ModelSerializer):
 
         return None
     
+    
     class Meta:
         model = User
         fields = ('id', 'first_name', 'last_name', 'profile_image')
@@ -32,6 +33,8 @@ class UserSerializer(serializers.ModelSerializer):
             'last_name': {'read_only': True},
             'profile_image': {'read_only': True},
         }
+        
+
 
 class ConversationMessagesSerializer(serializers.ModelSerializer):
     """

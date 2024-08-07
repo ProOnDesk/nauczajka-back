@@ -15,9 +15,13 @@ from datetime import timedelta
 from dotenv import load_dotenv
 from bdio_backend.jazzmin.settings import JAZZMIN_SETTINGS as js_JAZZMIN_SETTINGS, JAZZMIN_UI_TWEAKS as js_JAZZMIN_UI_TWEAKS
 
+load_dotenv()
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -35,6 +39,8 @@ if DEBUG:
 
 ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS').split(' ')
 
+
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS').split(' ')
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = True
@@ -223,8 +229,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/static/'
-MEDIA_URL = 'static/media/'
+STATIC_URL = 'static/'
+MEDIA_URL = 'media/'
 
 MEDIA_ROOT = '../vol/web/media'
 STATIC_ROOT = '../vol/web/static'
@@ -288,6 +294,9 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
+
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 AUTH_USER_MODEL = 'user.User'
 

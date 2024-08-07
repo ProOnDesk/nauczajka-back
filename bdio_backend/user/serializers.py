@@ -70,7 +70,7 @@ class UserUpdateSerializer(ModelSerializer):
                 return request.build_absolute_uri(obj.profile_image.url)
 
         return None
-    
+
     
     class Meta:
         model = User
