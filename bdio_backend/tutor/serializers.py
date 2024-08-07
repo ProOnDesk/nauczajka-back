@@ -5,43 +5,9 @@ from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from user.serializers import UserSerializer
 from django.utils.translation import gettext as _
+from drf_spectacular.utils import extend_schema_field
 
 
-class TutorDescriptionSerializer(ModelSerializer):
-    """
-    Serializer for the tutor description object
-    """
-    
-    
-    class Meta:
-        model = Tutor
-        fields = ('description',)
-
-
-class TutorPriceSerializer(ModelSerializer):
-    """
-    Serializer for the tutor price object
-    """
-    
-    
-    class Meta:
-        model = Tutor
-        fields = ('price',)
-
-    def validate(self, data):
-        """
-        Validate the price
-        """
-        if data['price'] < 0:
-            raise ValidationError(_("Price cannot be negative."))
-        
-        if data['price'] > 1000000:
-            raise ValidationError(_("Price cannot be more than 1000000."))
-        
-        return data
-
-      
-        
 class SkillsSerializer(ModelSerializer):
     """
     Serializer for the skills object
@@ -89,7 +55,7 @@ class TutorScheduleItemsSerializer(ModelSerializer):
     """
     class Meta:
         model = TutorScheduleItems
-        fields = ('start_time', 'end_time')
+        fields = ('id', 'start_time', 'end_time', 'is_reserved')
 
 
 class TutorSerializer(ModelSerializer):
@@ -98,11 +64,25 @@ class TutorSerializer(ModelSerializer):
     """
     first_name = CharField(source='user.first_name') 
     last_name = CharField(source='user.last_name') 
-    profile_image = CharField(source='user.profile_image.url')
+    profile_image = SerializerMethodField()
+
 
     class Meta:
         model = Tutor 
-        fields = ('id', 'first_name', 'last_name', 'profile_image', 'description', 'price', 'avg_rating', 'skills', 'online_sessions_available', 'in_person_sessions_available', 'tutoring_location', 'individual_sessions_available', 'group_sessions_available')
+        fields = (
+            'id', 'first_name', 'last_name', 'description', 'price', 'avg_rating', 
+            'skills', 'online_sessions_available', 'in_person_sessions_available', 
+            'tutoring_location', 'individual_sessions_available', 'group_sessions_available', 
+            'profile_image'
+        )
+        
+    @extend_schema_field(CharField(allow_null=True))
+    def get_profile_image(self, obj):
+        if obj.user.profile_image:
+            request = self.context.get('request')
+            if request is not None:
+                return request.build_absolute_uri(obj.user.profile_image.url)
+        return None
 
 
 class RatingsSerializer(ModelSerializer):
@@ -121,23 +101,29 @@ class TutorDetailSerializer(ModelSerializer):
     """
     first_name = CharField(source='user.first_name') 
     last_name = CharField(source='user.last_name') 
-    profile_image = CharField(source='user.profile_image.url', read_only=True)
+    profile_image = SerializerMethodField()
     user_id = CharField(source='user.id', read_only=True)
     
     tutor_schedule_items = TutorScheduleItemsSerializer(many=True, read_only=True)
-    tutor_ratings = RatingsSerializer(many=True, read_only=True)
 
     
     class Meta:
         model = Tutor
-        fields = ('user_id', 'first_name', 'last_name', 'profile_image', 'description', 'skills', 'avg_rating', 'price', 'tutor_ratings', 'tutor_schedule_items', 'online_sessions_available', 'in_person_sessions_available', 'tutoring_location', 'online_sessions_available', 'in_person_sessions_available', 'individual_sessions_available', 'group_sessions_available')
+        fields = ('user_id', 'first_name', 'last_name', 'profile_image', 'description', 'skills', 'avg_rating', 'price',  'tutor_schedule_items', 'online_sessions_available', 'in_person_sessions_available', 'tutoring_location', 'online_sessions_available', 'in_person_sessions_available', 'individual_sessions_available', 'group_sessions_available')
         extra_kwargs = {
             'user_id': {'read_only': True},
             'profile_image': {'read_only': True},
             'avg_rating': {'read_only': True},
-            'tutors_ratings': {'read_only': True},
             'tutor_schedule_items': {'read_only': True},
         }
+        
+    @extend_schema_field(CharField(allow_null=True))
+    def get_profile_image(self, obj):
+        if obj.user.profile_image:
+            request = self.context.get('request')
+            if request is not None:
+                return request.build_absolute_uri(obj.user.profile_image.url)
+        return None
     
     
 class TutorMeScheduleItemsSerializer(ModelSerializer):
@@ -148,7 +134,7 @@ class TutorMeScheduleItemsSerializer(ModelSerializer):
     
     class Meta:
         model = TutorScheduleItems
-        fields = ('id', 'start_time', 'end_time')
+        fields = ('id', 'start_time', 'end_time', 'is_reserved')
         read_only_fields = ('id',)
 
     def validate(self, data):
@@ -160,7 +146,7 @@ class TutorMeScheduleItemsSerializer(ModelSerializer):
             schedule_item = TutorScheduleItems(tutor=tutor, **data)
             schedule_item.clean()
         except ValidationError as e:
-            raise serializers.ValidationError(_(e.message))
+            raise ValidationError(_(e.message))
         
         return data
     
@@ -174,45 +160,31 @@ class TutorMeScheduleItemsSerializer(ModelSerializer):
         return schedule_item
     
     
-class TutorMethodSessionAvailabilitySerializer(ModelSerializer):
-    """
-    Serializer for the tutor method session availability object
-    """
-    
-    
+class TutorMeSerializer(ModelSerializer):
     class Meta:
         model = Tutor
-        fields = ('online_sessions_available', 'in_person_sessions_available')
+        fields = ('description', 'price', 'online_sessions_available', 'in_person_sessions_available', 'tutoring_location', 'individual_sessions_available', 'group_sessions_available')
         
-class TutorLocationSerializer(ModelSerializer):
-    """
-    Serializer for the tutor location object
-    """
-    
-    
-    class Meta:
-        model = Tutor
-        fields = ('tutoring_location',)
-
-    def validate(self, data):
+    def validate_price(self, value):
         """
-        Validate the tutoring location
+        Validate the price field
         """
-        if not data['tutoring_location']:
-            raise ValidationError(_("Tutoring location cannot be empty."))
+        if value < 0:
+            raise ValidationError(_("Price cannot be negative."))
+        elif value > 1000000:
+            raise ValidationError(_("Price cannot be more than 1000000"))
+        return value
         
-        if len(data['tutoring_location']) > 50:
-            raise ValidationError(_("Tutoring location cannot be longer than 50 characters."))
-        
-        return data
-
-    
-class TutorIndividualGroupSessionsSerializer(ModelSerializer):
-    """
-    Serializer for the tutor individual group sessions object
-    """
-    
-    
-    class Meta:
-        model = Tutor
-        fields = ('individual_sessions_available', 'group_sessions_available')
+    def update(self, instance, validated_data):
+        """
+        Update the tutor object
+        """
+        instance.description = validated_data.get('description', instance.description)
+        instance.price = validated_data.get('price', instance.price)
+        instance.online_sessions_available = validated_data.get('online_sessions_available', instance.online_sessions_available)
+        instance.in_person_sessions_available = validated_data.get('in_person_sessions_available', instance.in_person_sessions_available)
+        instance.tutoring_location = validated_data.get('tutoring_location', instance.tutoring_location)
+        instance.individual_sessions_available = validated_data.get('individual_sessions_available', instance.individual_sessions_available)
+        instance.group_sessions_available = validated_data.get('group_sessions_available', instance.group_sessions_available)
+        instance.save()
+        return instance

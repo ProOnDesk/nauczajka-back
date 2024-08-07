@@ -1,5 +1,5 @@
 """
-MAIN RENTRESTFUL URL Configuration
+MAIN URL Configuration
 """
 from django.contrib import admin
 from django.urls import path, include
@@ -14,8 +14,12 @@ urlpatterns = [
     path('api/', include('api.urls')),
     path('api/user/', include('user.urls')),
     path('api/chat/', include('chat.urls')),
-] 
+    path('api/reporting/', include('reporting.urls')),
+    path('api/notification/', include('notification.urls')),
+    path('api/reservation/', include('reservation.urls')),
+    path('api/announcement/', include('announcement.urls'))
+]
 
-if settings.DEBUG == True:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)    
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

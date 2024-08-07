@@ -13,35 +13,43 @@ import os
 from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
+from bdio_backend.jazzmin.settings import JAZZMIN_SETTINGS as js_JAZZMIN_SETTINGS, JAZZMIN_UI_TWEAKS as js_JAZZMIN_UI_TWEAKS
 
 load_dotenv()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
+
+load_dotenv()
+
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
-DEBUG = bool(int(os.environ.get('DJANGO_DEBUG', 0)))
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = bool(os.environ.get('DJANGO_DEBUG'))
+
 if DEBUG:
-    FRONTEND_URL = 'http://localhost:5173'
+    FRONTED_URL = 'http://localhost:3000'
     BACKEND_URL = 'http://localhost:8000'
-else:
-    FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:5173')
-    BACKEND_URL = os.environ.get('BACKEND_URL', 'http://localhost:8000')
-print(BACKEND_URL)
-print(DEBUG)
+
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS').split(' ')
 
 
 ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS').split(' ')
 
-# Application definition
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = True
 
 INSTALLED_APPS = [
     # Third-party apps
     'daphne',
     'channels',
+    'jazzmin',
     
     # Django apps    
     'django.contrib.admin',
@@ -59,12 +67,18 @@ INSTALLED_APPS = [
     'django_rest_passwordreset',
     'django_filters',
     'django_extensions',
+    'djoser',
+    'social_django',
     
     # Local apps
     'core',
     'user',
     'tutor',
     'chat',
+    'reporting',
+    'notification',
+    'reservation',
+    'announcement',
 ]
 
 MIDDLEWARE = [
@@ -98,7 +112,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'bdio_backend.wsgi.application'
 
-# Daphne ASGI application
+#  ASGI application
 ASGI_APPLICATION = 'bdio_backend.asgi.application'
 
 # Channels settings
@@ -124,7 +138,62 @@ DATABASES = {
         'PORT': os.environ.get('DB_PORT'),
     }
 }
+AUTHENTICATION_BACKENDS = [
+    'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.facebook.FacebookOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+]
 
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'api.authentication.CustomJWTAuthentication',
+    ),
+}
+
+""" When using PostgreSQL, it’s recommended to use the built-in JSONB field to store the extracted extra_data. To enable it define the setting:
+"""
+SOCIAL_AUTH_JSONFIELD_ENABLED = True
+
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.social_auth.associate_by_email',
+    
+    'core.social_core.pipeline.custom_create_user',
+    # 'social_core.pipeline.user.create_user',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+    'core.social_core.pipeline.get_avatar_picture'
+)
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('GOOGLE_AUTH_KEY')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('GOOGLE_AUTH_SECRET_KEY')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/userinfo.profile',
+    'openid'
+]
+SOCIAL_AUTH_GOOGLE_OAUTH2_EXTRA_DATA = ['first_name', 'last_name', 'picture']
+
+
+# SOCIAL_AUTH_FACEBOOK_KEY = os.environ.get('FACEBOOK_AUTH_KEY')
+# SOCIAL_AUTH_FACEBOOK_SECRET = os.environ.get('FACEBOOK_AUTH_SECRET_KEY')
+# SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+# SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
+#     'fields': 'email, first_name, last_name'
+# }
+
+AUTH_COOKIE = 'access'
+AUTH_COOKIE_ACCESS_MAX_AGE = 60 * 60
+AUTH_COOKIE_REFRESH_MAX_AGE = 60 * 60 * 24 * 7
+AUTH_COOKIE_SECURE = bool(os.environ.get('AUTH_COOKIE_SECURE'))
+AUTH_COOKIE_HTTP_ONLY = True
+AUTH_COOKIE_PATH = '/'
+AUTH_COOKIE_SAMESITE = 'None'
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -166,6 +235,10 @@ MEDIA_URL = 'media/'
 MEDIA_ROOT = '../vol/web/media'
 STATIC_ROOT = '../vol/web/static'
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static/')
+]
+
 # DEFAULT USER PROFILE IMAGE PATH
 DEFAULT_USER_PROFILE_IMAGE = 'uploads/user/default.jpg' 
 
@@ -173,20 +246,14 @@ DEFAULT_USER_PROFILE_IMAGE = 'uploads/user/default.jpg'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-REST_FRAMEWORK = {
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
-}
-
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'API Documentation for bdio_backend API',
-    'DESCRIPTION': 'bdio_backend API Documentation for the bdio_backend API that provides endpoints for user, tutors etc.',
+    'TITLE': 'API Documentation for Nauczajka API',
+    'DESCRIPTION': 'Nauczajka API Documentation for the API that provides endpoints for user, tutors etc.',
     'SERVE_INCLUDE_SCHEMA': False,
     'COMPONENT_SPLIT_REQUEST': True,
 }
+
+
 # JWT settings
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
@@ -217,7 +284,7 @@ SIMPLE_JWT = {
     "JTI_CLAIM": "jti",
 
     "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
-    "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
+    "SLIDING_TOKEN_LIFETIME": timedelta(minutes=60),
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=7),
 
     "TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainPairSerializer",
@@ -229,9 +296,7 @@ SIMPLE_JWT = {
 }
 
 
-# CORS settings
 CORS_ALLOW_ALL_ORIGINS = True
-
 
 AUTH_USER_MODEL = 'user.User'
 
@@ -253,9 +318,24 @@ DJANGO_REST_MULTITOKENAUTH_RESET_TOKEN_EXPIRY_TIME = 0.5 # 30 minutes
 # Is email confirmation required
 IS_CUSTOM_CONFIRM_EMAIL_REQUIRED = True
 
+DJOSER = {
+    'TOKEN_MODEL': None,
+    'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': os.environ.get('REDIRECT_URLS').split(' ')
+
+}
 # Graph settings
 
 GRAPH_MODELS = {
   'all_applications': True,
   'group_models': True,
 }
+
+# JAZZMIN SETTINGS FOR ADMIN PANEL
+JAZZMIN_SETTINGS = js_JAZZMIN_SETTINGS
+JAZZMIN_UI_TWEAKS = js_JAZZMIN_UI_TWEAKS
+
+# Celery Confiugration
+CELERY_TIMEZONE = 'Europe/Warsaw'
+CELERY_TASK_TIME_LIMIT = 30 * 60
+CELERY_BROKER_URL = 'redis://redis:6379'
+CELERY_RESULT_BACKEND = 'redis://redis:6379'
