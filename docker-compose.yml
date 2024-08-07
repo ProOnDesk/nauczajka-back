@@ -8,11 +8,9 @@ services:
       - "8000:8000"
     volumes:
       - ./bdio_backend:/bdio_backend
-      - /vol/web/:/vol/web
+      - dev-static-data:/vol/web
     command: >
-      sh -c "python manage.py wait_for_db && python manage.py makemigrations && python manage.py migrate && python manage.py move_media && gunicorn bdio_backend.wsgi:application --bind 0.0.0.0:8000"
-    expose:
-      - "8000"
+      sh -c "python manage.py wait_for_db && python manage.py makemigrations && python manage.py migrate && python manage.py move_media && python manage.py runserver 0.0.0.0:8000"
     depends_on:
       - bdio-db
       - redis
@@ -66,3 +64,4 @@ services:
 
 volumes:
   postgres_data:
+  dev-static-data:

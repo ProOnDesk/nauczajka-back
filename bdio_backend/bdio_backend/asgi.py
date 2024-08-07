@@ -12,15 +12,15 @@ import os
 from django.core.asgi import get_asgi_application
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.security.websocket import AllowedHostsOriginValidator
-from chat import routing as chat_routing
-from notification import routing as notification_routing
-from core.middleware import TokenAuthMiddleware, CookieMiddleware
 
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bdio_backend.settings')
 
 application = get_asgi_application()
 
+from chat import routing as chat_routing
+from core.middleware import TokenAuthMiddleware, CookieMiddleware
+from notification import routing as notification_routing
 
 application = ProtocolTypeRouter({
     'http': application,
