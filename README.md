@@ -30,10 +30,6 @@ This project aims to develop an online tutoring platform using Django, Django Re
 - **Email Confirmation:** Users receive email confirmations for successful registration.
 - **Password Reset:** Users can reset their passwords via email if forgotten.
 
-### API Development
-
-- **RESTful API:** Development of HTTP endpoints to support various functionalities, allowing integration with frontend.
-- **Websockets:** Implementation of Websockets for real-time chat functionality.
 
 ## Frontend Integration
 
