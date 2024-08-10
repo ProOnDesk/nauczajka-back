@@ -205,12 +205,12 @@ class CustomProviderAuthView(ProviderAuthView):
                 examples=[
                 OpenApiExample(
                     'Example 1',
-                    value=f'{settings.FRONTED_URL}/auth/google',
+                    value=f'{settings.FRONTEND_URL}/auth/google',
                     description='Google redirect_uri'
                 ),
                 OpenApiExample(
                     'Example 2',
-                    value=f'{settings.FRONTED_URL}/auth/facebook',
+                    value=f'{settings.FRONTEND_URL}/auth/facebook',
                     description='Facebook redirect_uri '
                 )
             ]
