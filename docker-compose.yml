@@ -36,7 +36,6 @@ services:
     ports:
       - "5432:5432"
 
-
   redis:
     image: "redis:7"
     ports:
@@ -67,7 +66,3 @@ volumes:
   postgres_data:
   dev-static-data:
     driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /vol/web
