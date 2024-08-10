@@ -20,11 +20,13 @@ services:
 
     # Uncomment this if IPv6 is not enabled on your host
     # DISABLE_IPV6: 'true'
-
+    networks:
+      - nginx
     volumes:
       - ./data:/data
       - ./letsencrypt:/etc/letsencrypt
       - dev-static-data:/vol/web
+      
   bdio-app:
     build:
       context: .
@@ -41,6 +43,8 @@ services:
       - daphne
     env_file:
       - ./.env
+    networks:
+      - nginx
 
   daphne:
     build:
@@ -51,6 +55,8 @@ services:
       - "8001:8001"
     env_file:
       - ./.env
+    networks:
+      - nginx
 
   bdio-db:
     image: postgres:16-alpine
@@ -60,11 +66,15 @@ services:
       - ./.env
     ports:
       - "5432:5432"
+    networks:
+      - nginx
 
   redis:
     image: "redis:7"
     ports:
       - "6379:6379"
+    networks:
+      - nginx
 
   celery:
     build:
@@ -77,6 +87,8 @@ services:
     depends_on:
       - bdio-db
       - redis
+    networks:
+      - nginx
 
   flower:
     image: mher/flower:0.9.7
@@ -85,7 +97,12 @@ services:
     command: flower --broker=redis://redis:6379
     depends_on:
       - celery
+    networks:
+      - nginx
 
 volumes:
   postgres_data:
   dev-static-data:
+
+networks:
+  nginx:
