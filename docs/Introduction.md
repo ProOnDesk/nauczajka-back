@@ -52,7 +52,7 @@ EMAIL_USER=
 EMAIL_PASS=
 ```
 
-##### How to Get EMAIL_USER and EMAIL_PASS:
+#### How to Get EMAIL_USER and EMAIL_PASS:
 
 - **If you're using Gmail**:
 
@@ -81,6 +81,26 @@ EMAIL_PASS=
 ```env
 EMAIL_USER=your-email@gmail.com
 EMAIL_PASS=generated-app-password
+```
+
+#### How to Get GOOGLE_AUTH_KEY and GOOGLE_AUTH_SECRET_KEY:
+
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/).
+2. Create a new project (or select an existing project).
+3. In the **APIs & Services** section, go to **Credentials** and create **OAuth 2.0 Client IDs**.
+4. For the **Authorized Redirect URIs**, use the URL where your application will handle the Google login response, such as:
+
+   - `http://localhost:8000/accounts/google/login/callback/`
+
+5. After creating the credentials, you will get:
+   - **GOOGLE_AUTH_KEY**: Your client ID.
+   - **GOOGLE_AUTH_SECRET_KEY**: Your client secret.
+
+##### Example:
+
+```env
+GOOGLE_AUTH_KEY=your-google-client-id
+GOOGLE_AUTH_SECRET_KEY=your-google-client-secret
 ```
 
 ### 3. Build and Run the Containers
