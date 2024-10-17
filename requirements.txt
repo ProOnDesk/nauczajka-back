@@ -19,3 +19,4 @@ social-auth-core>=4.5.4, <4.6
 djoser>=2.2.3, <2.3
 celery>=5.4.0, <5.5
 redis>=5.0.7, <5.1
+gunicorn>=21.2.0, <21.3
