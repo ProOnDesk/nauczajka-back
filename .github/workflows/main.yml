@@ -44,24 +44,15 @@ jobs:
           echo "FRONTEND_URL=${{ secrets.FRONTEND_URL }}" >> .env
           echo "BACKEND_URL=${{ secrets.BACKEND_URL }}" >> .env
 
-      - name: Build Docker images and Run Tests Locally
+      - name: Build Docker images
         run: |
           docker compose build
-          docker compose run --rm bdio-app sh -c "python manage.py test"
 
-      - name: Install SSH keys
+      - name: Run Tests in Docker
         run: |
-          install -m 600 -D /dev/null ~/.ssh/id_rsa
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
+          docker compose up -d  
+          docker compose exec bdio-app python manage.py test
 
-      - name: Connect and Pull Latest Code on Server
+      - name: Clean up Docker containers, networks, and volumes
         run: |
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-            cd ${{ secrets.WORK_DIR }}
-            git checkout ${{ secrets.MAIN_BRANCH }}
-            git pull
-          EOF
-
-      - name: Cleanup
-        run: rm -rf ~/.ssh
+          docker compose down --volumes --remove-orphans  # Remove volumes and orphaned containers
