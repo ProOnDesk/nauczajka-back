@@ -1,23 +1,67 @@
 on:
   push:
     branches:
+      - develop
+      - main
+  pull_request:
+    branches:
       - main
   workflow_dispatch:
-  
+
 jobs:
-  run_pull:
-    name: run pull
+  run_pull_and_test:
+    name: Run Pull and Test Django App in Docker
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: install ssh keys
-      # check this thread to understand why its needed:
-      # https://stackoverflow.com/a/70447517
-      run: |
-        install -m 600 -D /dev/null ~/.ssh/id_rsa
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-        ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
-    - name: connect and pull
-      run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && git checkout ${{ secrets.MAIN_BRANCH }} && git pull && exit"
-    - name: cleanup
-      run: rm -rf ~/.ssh
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create .env file from GitHub Secrets
+        run: |
+          echo "DJANGO_DEBUG=${{ secrets.DJANGO_DEBUG }}" >> .env
+          echo "DJANGO_ALLOWED_HOSTS=${{ secrets.DJANGO_ALLOWED_HOSTS }}" >> .env
+          echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
+          echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
+          echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
+          echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
+          echo "DB_ENGINE=${{ secrets.DB_ENGINE }}" >> .env
+          echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+          echo "EMAIL_USER=${{ secrets.EMAIL_USER }}" >> .env
+          echo "EMAIL_PASS=${{ secrets.EMAIL_PASS }}" >> .env
+          echo "ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}" >> .env
+          echo "ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}" >> .env
+          echo "AUTH_COOKIE_SECURE=${{ secrets.AUTH_COOKIE_SECURE }}" >> .env
+          echo "REDIRECT_URLS=${{ secrets.REDIRECT_URLS }}" >> .env
+          echo "GOOGLE_AUTH_KEY=${{ secrets.GOOGLE_AUTH_KEY }}" >> .env
+          echo "GOOGLE_AUTH_SECRET_KEY=${{ secrets.GOOGLE_AUTH_SECRET_KEY }}" >> .env
+          echo "PGADMIN_DEFAULT_EMAIL=${{ secrets.PGADMIN_DEFAULT_EMAIL }}" >> .env
+          echo "PGADMIN_DEFAULT_PASSWORD=${{ secrets.PGADMIN_DEFAULT_PASSWORD }}" >> .env
+          echo "FRONTEND_URL=${{ secrets.FRONTEND_URL }}" >> .env
+          echo "BACKEND_URL=${{ secrets.BACKEND_URL }}" >> .env
+
+      - name: Build Docker images and Run Tests Locally
+        run: |
+          docker compose build
+          docker compose run --rm bdio-app sh -c "python manage.py test"
+
+      - name: Install SSH keys
+        run: |
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
+
+      - name: Connect and Pull Latest Code on Server
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            cd ${{ secrets.WORK_DIR }}
+            git checkout ${{ secrets.MAIN_BRANCH }}
+            git pull
+          EOF
+
+      - name: Cleanup
+        run: rm -rf ~/.ssh
